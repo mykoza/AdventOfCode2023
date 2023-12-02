@@ -5,8 +5,8 @@ public abstract class Solution
     public void Run()
     {
         ReadInput("Inputs/" + DayNumber.ToString("D2") + "/input.txt");
-        var res = Logic();
-        PrintResult(res);
+        PrintResult(1, LogicPart1());
+        PrintResult(2, LoginPart2());
     }
 
     protected string[] _inputLines = [];
@@ -17,10 +17,12 @@ public abstract class Solution
         _inputLines = File.ReadAllLines(fileName);
     }
 
-    protected abstract string Logic();
+    protected abstract string LogicPart1();
 
-    protected void PrintResult(string res)
+    protected abstract string LoginPart2();
+
+    protected void PrintResult(int part, string res)
     {
-        Console.WriteLine($"Answer for day {DayNumber} is " + res);
+        Console.WriteLine($"Answer for day {DayNumber}, part {part} is " + res);
     }
 }
