@@ -9,8 +9,6 @@
 
   <ItemGroup>
     <Folder Include="Inputs\" />
-    <Folder Include="Inputs\01\" />
-    <Folder Include="Solutions\" />
   </ItemGroup>
 
   <ItemGroup>
