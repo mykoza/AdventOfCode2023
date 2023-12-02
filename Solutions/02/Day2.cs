@@ -56,6 +56,42 @@ public class Day2 : Solution
 
     protected override string LoginPart2()
     {
-        throw new NotImplementedException();
+        var powers = new int[_inputLines.Length];
+
+        for (int i = 0; i < _inputLines.Length; i++)
+        {
+            string line = _inputLines[i];
+            var split = line.Split(':');
+            var game = split[0];
+            var gameId = game.Split(' ')[1];
+            string[] sets = split[1].Split(';').Select(x => x.Trim()).ToArray();
+            
+            var minNumbers = new Dictionary<string, int>() {
+                {"red", 0 },
+                {"green", 0},
+                {"blue", 0}
+            };
+
+            foreach (var set in sets)
+            {
+                string[] subsets = set.Split(',').Select(x => x.Trim()).ToArray();
+
+                foreach (var subset in subsets)
+                {
+                    var splitSubset = subset.Split(' ');
+                    var number = int.Parse(splitSubset[0].ToString());
+                    var color = splitSubset[1];
+
+                    if (number > minNumbers[color])
+                    {
+                        minNumbers[color] = number;
+                    }
+                }
+            }
+
+            powers[i] = minNumbers["red"] * minNumbers["green"] * minNumbers["blue"];
+        }
+
+        return powers.Sum().ToString();
     }
 }
