@@ -9,15 +9,15 @@ public class Day1 : Solution
     private readonly char[] _numbers = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
 
     private readonly WordNumber[] _wordNumbersArray = [
-        new WordNumber("one", '1'),
-        new WordNumber("two", '2'),
-        new WordNumber("three", '3'),
-        new WordNumber("four", '4'),
-        new WordNumber("five", '5'),
-        new WordNumber("six", '6'),
-        new WordNumber("seven", '7'),
-        new WordNumber("eight", '8'),
-        new WordNumber("nine", '9'),
+        new("one", '1'),
+        new("two", '2'),
+        new("three", '3'),
+        new("four", '4'),
+        new("five", '5'),
+        new("six", '6'),
+        new("seven", '7'),
+        new("eight", '8'),
+        new("nine", '9'),
     ];
 
     protected override string LogicPart1()
@@ -68,11 +68,9 @@ public class Day1 : Solution
             // find first digit and break
             for (int j = 0; j < length; j++)
             {
-                char character = line[j];
-
-                if (searchDigits.Contains(character))
+                if (searchDigits.Contains(line[j]))
                 {
-                    hits[j] = character;
+                    hits[j] = line[j];
                     goto AfterFirstDigit;
                 }
 
@@ -80,7 +78,7 @@ public class Day1 : Solution
                 {
                     foreach (var wordNumber in _wordNumbersArray)
                     {
-                        if (line.Substring(j, Math.Min(wordNumber.Length, length - j)) == wordNumber.Word)
+                        if (length - j >= wordNumber.Length && line.Substring(j, wordNumber.Length) == wordNumber.Word)
                         {
                             hits[j] = wordNumber.Digit;
                             goto AfterFirstDigit;
@@ -94,9 +92,7 @@ public class Day1 : Solution
             // find last digit and break
             for (int j = length - 1; j >= 0; j--)
             {
-                char character = line[j];
-
-                if (searchDigits.Contains(character))
+                if (searchDigits.Contains(line[j]))
                 {
                     hits[j] = line[j];
                     goto AfterLastDigit;
@@ -117,11 +113,7 @@ public class Day1 : Solution
 
             AfterLastDigit:
 
-            var chars = new char[2];
-            chars[0] = hits.Values.First();
-            chars[1] = hits.Values.Last();
-
-            numbers[i] = int.Parse(new string(chars));
+            numbers[i] = int.Parse([hits.Values.First(), hits.Values.Last()]);
         }
 
         return numbers.Sum().ToString();
@@ -129,18 +121,10 @@ public class Day1 : Solution
 }
 
 
-public struct WordNumber
+public readonly struct WordNumber(string word, char digit)
 {
-    public string Word { get; init;}
-    public char Digit {get; init;}
-    public char FirstLetter {get; init;}
-    public int Length {get; init;}
-
-    public WordNumber(string word, char digit)
-    {
-        Word = word;
-        Digit = digit;
-        FirstLetter = word[0];
-        Length = word.Length;
-    }
+    public string Word { get; init; } = word;
+    public char Digit { get; init; } = digit;
+    public char FirstLetter { get; init; } = word[0];
+    public int Length { get; init; } = word.Length;
 }
