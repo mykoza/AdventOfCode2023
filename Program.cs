@@ -1,10 +1,14 @@
 ﻿using AdventOfCode2023;
 
-var day1 = new Day1();
-day1.Run();
+Solution[] days = [ 
+    new Day1(),
+    new Day2(),
+];
 
-var day2 = new Day2();
-day2.Run();
+foreach (var day in days)
+{
+    day.Run();
+}
 
 Console.WriteLine("Press any key to exit...");
 Console.ReadLine();
