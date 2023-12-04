@@ -3,50 +3,51 @@
 public class Day3 : Solution
 {
     protected override int DayNumber { get; init; } = 3;
+    private readonly char[] _digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    private List<Part> _parts = [];
 
-    private readonly char[] _nums = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-    
     protected override string LogicPart1()
     {
-        var nums = new List<Number>();
-        var firstLine = new char[_inputLines[0].Length];
-        Array.Fill(firstLine, '.');
-
-        _inputLines = [new string(firstLine), .. _inputLines, new string(firstLine)];
+        var nums = new List<Part>();
+        PadInputLines();
 
         for (int i = 0; i < _inputLines.Length; i++)
         {
             string line = _inputLines[i];
             bool prevWasNumber = false;
-            string digits = string.Empty;
-            string surroundings = string.Empty;
-            bool beginningOfLine = true;
+            string partDigits = string.Empty;
+            List<Position> partPositions = [];
+            string partSurroundings = string.Empty;
 
             for (int j = 0; j < line.Length; j++)
             {
                 char character = line[j];
 
-                if (_nums.Contains(character))
+                if (_digits.Contains(character))
                 {
-                    digits += character;
+                    partDigits += character;
+                    partPositions.Add(new Position(i, j));
 
-                    if (!prevWasNumber && !beginningOfLine)
+                    if (!prevWasNumber && j > 0)
                     {
-                        surroundings += line[j-1];
-                        surroundings += _inputLines[i-1][j-1];
-                        surroundings += _inputLines[i+1][j-1];
+                        partSurroundings += line[j - 1];
+                        partSurroundings += _inputLines[i - 1][j - 1];
+                        partSurroundings += _inputLines[i + 1][j - 1];
                     }
 
-                    surroundings += _inputLines[i-1][j];
-                    surroundings += _inputLines[i+1][j];
+                    partSurroundings += _inputLines[i - 1][j];
+                    partSurroundings += _inputLines[i + 1][j];
 
-                    if (j == 139)
+                    if (j == line.Length - 1)
                     {
-                        var number = new Number(digits, [.. surroundings]); 
+                        var part = new Part(
+                            partDigits,
+                            partPositions,
+                            [.. partSurroundings]);
 
-                        if (number.HasSymbols)
+                        if (part.HasSymbols)
                         {
-                            nums.Add(number);
+                            _parts.Add(part);
                         }
                     }
 
@@ -54,48 +55,115 @@ public class Day3 : Solution
                 }
                 else if (prevWasNumber)
                 {
-                    surroundings += character;
-                    surroundings += _inputLines[i-1][j];
-                    surroundings += _inputLines[i+1][j];
+                    partSurroundings += character;
+                    partSurroundings += _inputLines[i - 1][j];
+                    partSurroundings += _inputLines[i + 1][j];
 
-                    var number = new Number(digits, [.. surroundings]); 
+                    var part = new Part(
+                        partDigits,
+                        partPositions,
+                        [.. partSurroundings]);
 
-                    if (number.HasSymbols)
+                    if (part.HasSymbols)
                     {
-                        nums.Add(number);
+                        _parts.Add(part);
                     }
-                    
-                    prevWasNumber = false;
-                    digits = string.Empty;
-                    surroundings = string.Empty;
-                }
 
-                beginningOfLine = false;
+                    prevWasNumber = false;
+                    partDigits = string.Empty;
+                    partSurroundings = string.Empty;
+                    partPositions = [];
+                }
             }
         }
 
-        return nums.Sum(number => number.Value).ToString();
+        return _parts.Sum(part => part.Value).ToString();
     }
 
     protected override string LoginPart2()
     {
-        throw new NotImplementedException();
+        List<int> gearRatios = [];
+
+        for (int i = 0; i < _inputLines.Length; i++)
+        {
+            string line = _inputLines[i];
+            List<Part> surroundingNumbers = [];
+            List<Position> surroundingPositions = [];
+
+            for (int j = 0; j < line.Length; j++)
+            {
+                char character = line[j];
+
+                if (character == '*')
+                {
+                    surroundingPositions.Add(new Position(i - 1, j));
+                    surroundingPositions.Add(new Position(i + 1, j));
+
+                    if (j > 0)
+                    {
+                        surroundingPositions.Add(new Position(i - 1, j - 1));
+                        surroundingPositions.Add(new Position(i, j - 1));
+                        surroundingPositions.Add(new Position(i + 1, j - 1));
+                    }
+
+                    if (j < line.Length - 1)
+                    {
+                        surroundingPositions.Add(new Position(i - 1, j + 1));
+                        surroundingPositions.Add(new Position(i, j + 1));
+                        surroundingPositions.Add(new Position(i + 1, j + 1));
+                    }
+
+                    foreach (var pos in surroundingPositions)
+                    {
+                        surroundingNumbers.AddRange(_parts.Where(part => part.Positions.Contains(pos)));
+                    }
+
+                    if (surroundingNumbers.Count > 0)
+                    {
+                        surroundingNumbers = surroundingNumbers.Distinct().ToList();
+                    }
+
+                    if (surroundingNumbers.Count == 2)
+                    {
+                        gearRatios.Add(surroundingNumbers[0].Value * surroundingNumbers[1].Value);
+                    }
+
+                    surroundingNumbers = [];
+                    surroundingPositions = [];
+                }
+            }
+        }
+
+        return gearRatios.Sum().ToString();
+    }
+
+    private void PadInputLines()
+    {
+        var blankLine = new char[_inputLines[0].Length];
+        Array.Fill(blankLine, '.');
+        _inputLines = [new string(blankLine), .. _inputLines, new string(blankLine)];
     }
 }
 
-public record Number
+public record Part
 {
     public string Digits;
     public int Value;
     public char[] Surroundings;
     public bool HasSymbols = false;
+    public List<Position> Positions = [];
     private readonly char[] _nums = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
-    public Number(string digits, char[] surroundings)
+    public Part(string digits, List<Position> positions, char[] surroundings)
     {
         Digits = digits;
         Value = int.Parse(digits);
+        Positions = positions;
         Surroundings = surroundings;
         HasSymbols = surroundings.Any(character => !_nums.Contains(character) && character != '.');
     }
+
+
 }
+
+public record struct Position(int Line, int Column);
