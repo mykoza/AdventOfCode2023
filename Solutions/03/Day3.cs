@@ -4,20 +4,18 @@ public class Day3 : Solution
 {
     protected override int DayNumber { get; init; } = 3;
     private readonly char[] _digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-    private List<Part> _parts = [];
+    private List<Number> _parts = [];
 
     protected override string LogicPart1()
     {
-        var nums = new List<Part>();
+        var nums = new List<Number>();
         PadInputLines();
 
         for (int i = 0; i < _inputLines.Length; i++)
         {
             string line = _inputLines[i];
-            bool prevWasNumber = false;
-            string partDigits = string.Empty;
-            List<Position> partPositions = [];
-            string partSurroundings = string.Empty;
+            bool prevWasDigit = false;
+            var number = new Number();
 
             for (int j = 0; j < line.Length; j++)
             {
@@ -25,54 +23,45 @@ public class Day3 : Solution
 
                 if (_digits.Contains(character))
                 {
-                    partDigits += character;
-                    partPositions.Add(new Position(i, j));
+                    number.AddToDigits(character);
 
-                    if (!prevWasNumber && j > 0)
+                    number.AddToPositions(new Position(i, j));
+
+                    if (!prevWasDigit && j > 0)
                     {
-                        partSurroundings += line[j - 1];
-                        partSurroundings += _inputLines[i - 1][j - 1];
-                        partSurroundings += _inputLines[i + 1][j - 1];
+                        number.CheckAndSetHasSymbols(line[j-1]);
+                        number.CheckAndSetHasSymbols(_inputLines[i - 1][j - 1]);
+                        number.CheckAndSetHasSymbols(_inputLines[i + 1][j - 1]);
                     }
 
-                    partSurroundings += _inputLines[i - 1][j];
-                    partSurroundings += _inputLines[i + 1][j];
+                    number.CheckAndSetHasSymbols(_inputLines[i - 1][j]);
+                    number.CheckAndSetHasSymbols(_inputLines[i + 1][j]);
 
                     if (j == line.Length - 1)
                     {
-                        var part = new Part(
-                            partDigits,
-                            partPositions,
-                            [.. partSurroundings]);
-
-                        if (part.HasSymbols)
+                        if (number.HasSymbols)
                         {
-                            _parts.Add(part);
+                            _parts.Add(number);
                         }
+
+                        number = new Number();
                     }
 
-                    prevWasNumber = true;
+                    prevWasDigit = true;
                 }
-                else if (prevWasNumber)
+                else if (prevWasDigit)
                 {
-                    partSurroundings += character;
-                    partSurroundings += _inputLines[i - 1][j];
-                    partSurroundings += _inputLines[i + 1][j];
+                    number.CheckAndSetHasSymbols(character);
+                    number.CheckAndSetHasSymbols(_inputLines[i - 1][j]);
+                    number.CheckAndSetHasSymbols(_inputLines[i + 1][j]);
 
-                    var part = new Part(
-                        partDigits,
-                        partPositions,
-                        [.. partSurroundings]);
-
-                    if (part.HasSymbols)
+                    if (number.HasSymbols)
                     {
-                        _parts.Add(part);
+                        _parts.Add(number);
                     }
-
-                    prevWasNumber = false;
-                    partDigits = string.Empty;
-                    partSurroundings = string.Empty;
-                    partPositions = [];
+                    
+                    number = new Number();
+                    prevWasDigit = false;
                 }
             }
         }
@@ -87,7 +76,7 @@ public class Day3 : Solution
         for (int i = 0; i < _inputLines.Length; i++)
         {
             string line = _inputLines[i];
-            List<Part> surroundingNumbers = [];
+            List<Number> surroundingParts = [];
             List<Position> surroundingPositions = [];
 
             for (int j = 0; j < line.Length; j++)
@@ -115,20 +104,20 @@ public class Day3 : Solution
 
                     foreach (var pos in surroundingPositions)
                     {
-                        surroundingNumbers.AddRange(_parts.Where(part => part.Positions.Contains(pos)));
+                        surroundingParts.AddRange(_parts.Where(part => part.Positions.Contains(pos)));
                     }
 
-                    if (surroundingNumbers.Count > 0)
+                    if (surroundingParts.Count > 0)
                     {
-                        surroundingNumbers = surroundingNumbers.Distinct().ToList();
+                        surroundingParts = surroundingParts.Distinct().ToList();
                     }
 
-                    if (surroundingNumbers.Count == 2)
+                    if (surroundingParts.Count == 2)
                     {
-                        gearRatios.Add(surroundingNumbers[0].Value * surroundingNumbers[1].Value);
+                        gearRatios.Add(surroundingParts[0].Value * surroundingParts[1].Value);
                     }
 
-                    surroundingNumbers = [];
+                    surroundingParts = [];
                     surroundingPositions = [];
                 }
             }
@@ -145,25 +134,45 @@ public class Day3 : Solution
     }
 }
 
-public record Part
+public record Number
 {
-    public string Digits;
-    public int Value;
-    public char[] Surroundings;
+    public string Digits { get; private set; } = "";
+    public int Value { get; private set; } = 0;
     public bool HasSymbols = false;
-    public List<Position> Positions = [];
+    public List<Position> Positions { get; init; } = [];
     private readonly char[] _nums = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
-    public Part(string digits, List<Position> positions, char[] surroundings)
+    public Number()
+    {
+
+    }
+
+    public Number(string digits, List<Position> positions, List<char> surroundings)
     {
         Digits = digits;
         Value = int.Parse(digits);
         Positions = positions;
-        Surroundings = surroundings;
-        HasSymbols = surroundings.Any(character => !_nums.Contains(character) && character != '.');
+        HasSymbols = surroundings.Any(character => character != '.' && !_nums.Contains(character));
     }
 
+    public void CheckAndSetHasSymbols(char character)
+    {
+        if (HasSymbols == false && character != '.' && !_nums.Contains(character))
+        {
+            HasSymbols = true;
+        }
+    }
 
+    public void AddToDigits(char character)
+    {
+        Digits += character;
+        Value = int.Parse(Digits);
+    }
+
+    public void AddToPositions(Position position)
+    {
+        Positions.Add(position);
+    }
 }
 
 public record struct Position(int Line, int Column);
