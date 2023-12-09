@@ -13,4 +13,4 @@ foreach (var day in days)
 }
 
 Console.WriteLine("Press any key to exit...");
-// Console.ReadLine();
+Console.ReadLine();
