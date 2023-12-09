@@ -10,13 +10,7 @@ public class Day4 : Solution
 
         foreach (var line in _inputLines)
         {
-            var lineSplit1 = line.Split(':');
-            var lineSplit2 = lineSplit1[1].Split('|');
-            var winningNumbersString = lineSplit2[0];
-            var ownNumbersString = lineSplit2[1];
-            var winningNumbers = winningNumbersString.Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-            var ownNumbers = ownNumbersString.Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-            var intersect = ownNumbers.Intersect(winningNumbers).Count();
+            int intersect = FindNumberOfMatchingCards(line);
             res += (int)Math.Pow(2, intersect - 1);
         }
 
@@ -25,6 +19,29 @@ public class Day4 : Solution
 
     protected override string LoginPart2()
     {
-        throw new NotImplementedException();
+        var numOfMatchesByLine = _inputLines
+            .Select(FindNumberOfMatchingCards)
+            .ToArray();
+
+        var counts = new int[_inputLines.Length];
+        Array.Fill(counts, 1);
+
+        for (int i = 0; i < _inputLines.Length; i++)
+        {
+            for (int j = i + 1; j < i + numOfMatchesByLine[i] + 1; j++)
+            {
+                counts[j] += counts[i];
+            }
+        }
+
+        return counts.Sum().ToString();
+    }
+
+    private static int FindNumberOfMatchingCards(string line)
+    {
+        var lineSplit = line.Split(':')[1].Split('|');
+        var winningNumbers = lineSplit[0].Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        var ownNumbers = lineSplit[1].Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        return ownNumbers.Intersect(winningNumbers).Count();
     }
 }
