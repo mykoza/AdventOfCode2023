@@ -54,7 +54,7 @@ public class Day1 : Solution
         return numbers.Sum().ToString();
     }
 
-    protected override string LoginPart2()
+    protected override string LogicPart2()
     {
         int[] numbers = new int[_inputLines.Length];
         var searchDigits = SearchValues.Create(_numbers);

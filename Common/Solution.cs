@@ -2,6 +2,9 @@
 
 public abstract class Solution
 {
+    protected string[] _inputLines = [];
+    protected abstract int DayNumber { get; init; }
+
     public void Run()
     {
         if (!ReadInputFile())
@@ -10,8 +13,10 @@ public abstract class Solution
             return;
         }
 
+        BeforeLogic();
+
         PrintResult(1, LogicPart1());
-        PrintResult(2, LoginPart2());
+        PrintResult(2, LogicPart2());
     }
 
     protected bool ReadInputFile()
@@ -43,20 +48,22 @@ public abstract class Solution
         return $"Inputs/{DayNumber:D2}/example.txt";
     }
 
-    protected string[] _inputLines = [];
-    protected abstract int DayNumber { get; init; }
-
     protected void ReadInput(string fileName)
     {
         _inputLines = File.ReadAllLines(fileName);
     }
 
-    protected abstract string LogicPart1();
+    protected virtual void BeforeLogic()
+    {
 
-    protected abstract string LoginPart2();
+    }
 
     protected void PrintResult(int part, string res)
     {
         Console.WriteLine($"Answer for day {DayNumber}, part {part} is " + res);
     }
+
+    protected abstract string LogicPart1();
+
+    protected abstract string LogicPart2();
 }

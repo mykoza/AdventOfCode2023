@@ -17,7 +17,7 @@ public class Day4 : Solution
         return res.ToString();
     }
 
-    protected override string LoginPart2()
+    protected override string LogicPart2()
     {
         var numOfMatchesByLine = _inputLines
             .Select(FindNumberOfMatchingCards)

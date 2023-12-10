@@ -54,7 +54,7 @@ public class Day2 : Solution
         return possibleGames.Sum().ToString();
     }
 
-    protected override string LoginPart2()
+    protected override string LogicPart2()
     {
         var powers = new int[_inputLines.Length];
 

@@ -69,7 +69,7 @@ public class Day3 : Solution
         return _parts.Sum(part => part.Value).ToString();
     }
 
-    protected override string LoginPart2()
+    protected override string LogicPart2()
     {
         List<int> gearRatios = [];
 

@@ -12,10 +12,13 @@ public class Day5 : Solution
 
     protected override int DayNumber { get; init; } = 5;
 
-    protected override string LogicPart1()
+    protected override void BeforeLogic()
     {
         ParseInput();
+    }
 
+    protected override string LogicPart1()
+    {
         var seeds = _inputLines[0][7..].Split(' ').Select(long.Parse).ToList();
         var smallestLocation = long.MaxValue;
         foreach (var seed in seeds)
@@ -31,7 +34,7 @@ public class Day5 : Solution
         return smallestLocation.ToString();
     }
 
-    protected override string LoginPart2()
+    protected override string LogicPart2()
     {
         var values = _inputLines[0][7..].Split(' ').Select(long.Parse).ToList();
         var smallestLocation = long.MaxValue;
