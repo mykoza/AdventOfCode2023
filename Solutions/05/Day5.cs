@@ -14,30 +14,41 @@ public class Day5 : Solution
 
     protected override string LogicPart1()
     {
-        var seeds = _inputLines[0][7..].Split(' ').Select(long.Parse).ToList();
-
         ParseInput();
 
-        var locations = new List<long>();
+        var seeds = _inputLines[0][7..].Split(' ').Select(long.Parse).ToList();
+        var smallestLocation = long.MaxValue;
         foreach (var seed in seeds)
         {
-            var soil = _seedToSoil.GetDestination(seed);
-            var fertilizer = _soilToFertilizer.GetDestination(soil);
-            var water = _fertilizerToWater.GetDestination(fertilizer);
-            var light = _waterToLight.GetDestination(water);
-            var temperature = _lightToTemperature.GetDestination(light);
-            var humidity = _temperatureToHumidity.GetDestination(temperature);
-            var location = _humidityToLocation.GetDestination(humidity);
+            var location = FindLocationForSeed(seed);
 
-            locations.Add(location);
+            if (location < smallestLocation)
+            {
+                smallestLocation = location;
+            }
         }
 
-        return locations.Min().ToString();
+        return smallestLocation.ToString();
     }
 
     protected override string LoginPart2()
     {
-        throw new NotImplementedException();
+        var values = _inputLines[0][7..].Split(' ').Select(long.Parse).ToList();
+        var smallestLocation = long.MaxValue;
+        for (int i = 0; i < values.Count; i += 2)
+        {
+            for (long seed = values[i]; seed < values[i] + values[i + 1]; seed++)
+            {
+                var location = FindLocationForSeed(seed);
+
+                if (location < smallestLocation)
+                {
+                    smallestLocation = location;
+                }
+            }
+        }
+
+        return smallestLocation.ToString();
     }
 
     private void ParseInput()
@@ -60,7 +71,7 @@ public class Day5 : Solution
                 {
                     seedToSoilLines.Add(_inputLines[i]);
                 }
-                _seedToSoil = ParseMap(seedToSoilLines);
+                _seedToSoil = Map.Parse(seedToSoilLines);
             }
             else if (line == "soil-to-fertilizer map:")
             {
@@ -68,7 +79,7 @@ public class Day5 : Solution
                 {
                     soilToFertilizerLines.Add(_inputLines[i]);
                 }
-                _soilToFertilizer = ParseMap(soilToFertilizerLines);
+                _soilToFertilizer = Map.Parse(soilToFertilizerLines);
             }
             else if (line == "fertilizer-to-water map:")
             {
@@ -76,7 +87,7 @@ public class Day5 : Solution
                 {
                     fertilizerToWaterLines.Add(_inputLines[i]);
                 }
-                _fertilizerToWater = ParseMap(fertilizerToWaterLines);
+                _fertilizerToWater = Map.Parse(fertilizerToWaterLines);
             }
             else if (line == "water-to-light map:")
             {
@@ -84,7 +95,7 @@ public class Day5 : Solution
                 {
                     waterToLightLines.Add(_inputLines[i]);
                 }
-                _waterToLight = ParseMap(waterToLightLines);
+                _waterToLight = Map.Parse(waterToLightLines);
             }
             else if (line == "light-to-temperature map:")
             {
@@ -92,7 +103,7 @@ public class Day5 : Solution
                 {
                     lightToTemperatureLines.Add(_inputLines[i]);
                 }
-                _lightToTemperature = ParseMap(lightToTemperatureLines);
+                _lightToTemperature = Map.Parse(lightToTemperatureLines);
             }
             else if (line == "temperature-to-humidity map:")
             {
@@ -100,7 +111,7 @@ public class Day5 : Solution
                 {
                     temperatureToHumidityLines.Add(_inputLines[i]);
                 }
-                _temperatureToHumidity = ParseMap(temperatureToHumidityLines);
+                _temperatureToHumidity = Map.Parse(temperatureToHumidityLines);
             }
             else if (line == "humidity-to-location map:")
             {
@@ -108,26 +119,21 @@ public class Day5 : Solution
                 {
                     humidityToLocationLines.Add(_inputLines[i]);
                 }
-                _humidityToLocation = ParseMap(humidityToLocationLines);
+                _humidityToLocation = Map.Parse(humidityToLocationLines);
             }
         }
     }
-
-    private static Map ParseMap(List<string> maps)
+    
+    private long FindLocationForSeed(long seed)
     {
-        var map = new Map();
-
-        foreach (var line in maps)
-        {
-            var split = line.Split(' ');
-            var destinationStart = long.Parse(split[0]);
-            var sourceStart = long.Parse(split[1]);
-            var range = int.Parse(split[2]);
-
-            map.AddRange(new Range(sourceStart, destinationStart, range));
-        }
-
-        return map;
+        var soil = _seedToSoil.GetDestination(seed);
+        var fertilizer = _soilToFertilizer.GetDestination(soil);
+        var water = _fertilizerToWater.GetDestination(fertilizer);
+        var light = _waterToLight.GetDestination(water);
+        var temperature = _lightToTemperature.GetDestination(light);
+        var humidity = _temperatureToHumidity.GetDestination(temperature);
+        var location = _humidityToLocation.GetDestination(humidity);
+        return location;
     }
 }
 
@@ -140,6 +146,23 @@ public class Map
     public Map(List<Range> ranges)
     {
         _ranges = ranges;
+    }
+
+    public static Map Parse(List<string> input)
+    {
+        var map = new Map();
+
+        foreach (var line in input)
+        {
+            var split = line.Split(' ');
+            var destinationStart = long.Parse(split[0]);
+            var sourceStart = long.Parse(split[1]);
+            var range = int.Parse(split[2]);
+
+            map.AddRange(new Range(sourceStart, destinationStart, range));
+        }
+
+        return map;
     }
 
     public void AddRange(Range range)
