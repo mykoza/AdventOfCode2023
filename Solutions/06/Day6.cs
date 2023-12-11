@@ -61,38 +61,12 @@ public class Attempts(Race race)
 
     public int NumberOfWinningAttempts()
     {
-        var count = 0;
-        foreach (var attempt in YieldAttempts())
-        {
-            if (_race.RecordBeaten(attempt.DistanceTraveled))
-            {
-                count++;
-            }
-        }
+        var sqrtDelta = Math.Sqrt(Math.Pow(_race.Time, 2) - 4 * _race.RecordDistance);
+        var left = Math.Floor(((-_race.Time + sqrtDelta) / -2) + 1);
+        var right = Math.Ceiling(((-_race.Time - sqrtDelta) / -2) - 1);
 
-        return count;
-    }
-
-    public IEnumerable<Attempt> YieldAttempts()
-    {
-        for (int holdTime = 1; holdTime < _race.Time; holdTime++)
-        {
-            yield return new Attempt(holdTime, _race.Time);
-        }
-
-        yield break;
+        return (int)(right - left + 1);
     }
 }
 
-public class Attempt(long holdTime, long maxTime)
-{
-    public long DistanceTraveled { get; } = holdTime * (maxTime - holdTime);
-}
-
-public record Race(long Time, long RecordDistance)
-{
-    public bool RecordBeaten(long distance)
-    {
-        return distance > RecordDistance;
-    }
-}
+public record Race(long Time, long RecordDistance);
