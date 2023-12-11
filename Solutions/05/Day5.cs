@@ -126,7 +126,7 @@ public class Day5 : Solution
             }
         }
     }
-    
+
     private long FindLocationForSeed(long seed)
     {
         var soil = _seedToSoil.GetDestination(seed);
@@ -148,7 +148,7 @@ public class Map
 
     public Map(List<Range> ranges)
     {
-        _ranges = ranges;
+        _ranges = [.. ranges.OrderBy(range => range.DestinationStart)];
     }
 
     public static Map Parse(List<string> input)
@@ -170,26 +170,32 @@ public class Map
 
     public void AddRange(Range range)
     {
-        _ranges.Add(range);
+        var index = _ranges.FindIndex(r => r.DestinationStart > range.DestinationStart);
+
+        if (index < 0)
+        {
+            index = _ranges.Count;
+        }
+
+        _ranges.Insert(index, range);
     }
 
     public long GetDestination(long source)
     {
-        long destination = default;
         foreach (var range in _ranges)
         {
-            if (range.TryGetDestination(source, out destination))
+            if (range.TryGetDestination(source, out long destination))
             {
                 return destination;
             }
         }
 
-        if (destination == -1)
-        {
-            destination = source;
-        }
+        return source;
+    }
 
-        return destination;
+    public long GetSmallestDestinationForRange(long source, long range)
+    {
+        return 1;
     }
 }
 
@@ -200,12 +206,17 @@ public class Range(long sourceStart, long destinationStart, long range)
     private readonly long _destinationStart = destinationStart;
     private readonly long _destinationEnd = destinationStart + range - 1;
     private readonly long _range = range;
+    private readonly long _shift = destinationStart - sourceStart;
+
+    public long SourceStart => _sourceStart;
+
+    public long DestinationStart => _destinationStart;
 
     public bool TryGetDestination(long source, out long destination)
     {
         if (source >= _sourceStart && source <= _sourceEnd)
         {
-            destination = _destinationStart + (source - _sourceStart);
+            destination = source + _shift;
             return true;
         }
 
