@@ -4,91 +4,95 @@ public class Day6 : Solution
 {
     protected override int DayNumber { get; init; } = 6;
 
-    private readonly List<Race> _races = [];
-
-    protected override void BeforeLogic()
+    protected override string LogicPart1()
     {
         var times = _inputLines[0]
             .Split(':', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)[1]
             .Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
             .Select(int.Parse)
             .ToArray();
-        
+
         var distances = _inputLines[1]
             .Split(':', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)[1]
             .Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
             .Select(int.Parse)
             .ToArray();
 
+        var races = new List<Race>();
         for (int i = 0; i < times.Length; i++)
         {
-            _races.Add(new Race(times[i], distances[i]));
+            races.Add(new Race(times[i], distances[i]));
         }
-    }
 
-    protected override string LogicPart1()
-    {
-        var numberOfWaysToWin = 1;
-
-        foreach (var race in _races)
+        var res = 1;
+        foreach (var race in races)
         {
             var attempts = new Attempts(race);
-            numberOfWaysToWin *= attempts.WinningAttempts().Count;
+            res *= attempts.NumberOfWinningAttempts();
         }
 
-        return numberOfWaysToWin.ToString();
+        return res.ToString();
     }
 
     protected override string LogicPart2()
     {
-        throw new NotImplementedException();
+        var time = long.Parse(
+            string.Concat(
+                _inputLines[0]
+                    .Split(':', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)[1]
+                    .Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)));
+
+        var distance = long.Parse(
+            string.Concat(
+                _inputLines[1]
+                    .Split(':', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)[1]
+                    .Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)));
+
+        var race = new Race(time, distance);
+        var attempts = new Attempts(race);
+
+        return attempts.NumberOfWinningAttempts().ToString();
     }
 }
 
-public class Attempts
+public class Attempts(Race race)
 {
-    private readonly Race _race;
-    private readonly List<Attempt> _attempts = [];
+    private readonly Race _race = race;
 
-    public Attempts(Race race)
+    public int NumberOfWinningAttempts()
     {
-        _race = race;
-
-        for (int holdTime = 1; holdTime < race.Time; holdTime++)
+        var count = 0;
+        foreach (var attempt in YieldAttempts())
         {
-            _attempts.Add(new Attempt(holdTime, race.Time));
+            if (_race.RecordBeaten(attempt.DistanceTraveled))
+            {
+                count++;
+            }
         }
+
+        return count;
     }
 
-    public List<Attempt> WinningAttempts()
+    public IEnumerable<Attempt> YieldAttempts()
     {
-        return _attempts.Where(a => a.DistanceTraveled > _race.RecordDistance).ToList();
-    }
-}
+        for (int holdTime = 1; holdTime < _race.Time; holdTime++)
+        {
+            yield return new Attempt(holdTime, _race.Time);
+        }
 
-public class Attempt(int holdTime, int maxTime)
-{
-    private readonly int _holdTime = holdTime;
-    private readonly int _maxTime = maxTime;
-    private readonly int _distanceTraveled = holdTime * (maxTime - holdTime);
-
-    public int DistanceTraveled => _distanceTraveled;
-}
-
-public record Race(int Time, int RecordDistance)
-{
-    public bool RecordBeaten(int distance)
-    {
-        return distance < RecordDistance;
+        yield break;
     }
 }
 
-public class Boat(int buttonHoldTime)
+public class Attempt(long holdTime, long maxTime)
 {
-    private readonly int _speed = buttonHoldTime;
+    public long DistanceTraveled { get; } = holdTime * (maxTime - holdTime);
+}
 
-    public int DistanceTraveledInTime(int time)
+public record Race(long Time, long RecordDistance)
+{
+    public bool RecordBeaten(long distance)
     {
-        return _speed * time;
+        return distance > RecordDistance;
     }
 }
