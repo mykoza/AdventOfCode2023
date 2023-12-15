@@ -8,7 +8,7 @@ public class Day4 : Solution
     {
         var res = 0;
 
-        foreach (var line in _inputLines)
+        foreach (var line in inputLines)
         {
             int intersect = FindNumberOfMatchingCards(line);
             res += (int)Math.Pow(2, intersect - 1);
@@ -19,14 +19,14 @@ public class Day4 : Solution
 
     protected override string LogicPart2()
     {
-        var numOfMatchesByLine = _inputLines
+        var numOfMatchesByLine = inputLines
             .Select(FindNumberOfMatchingCards)
             .ToArray();
 
-        var counts = new int[_inputLines.Length];
+        var counts = new int[inputLines.Length];
         Array.Fill(counts, 1);
 
-        for (int i = 0; i < _inputLines.Length; i++)
+        for (int i = 0; i < inputLines.Length; i++)
         {
             for (int j = i + 1; j < i + numOfMatchesByLine[i] + 1; j++)
             {

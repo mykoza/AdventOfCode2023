@@ -19,7 +19,7 @@ public class Day5 : Solution
 
     protected override string LogicPart1()
     {
-        var seeds = _inputLines[0][7..].Split(' ').Select(long.Parse).ToList();
+        var seeds = inputLines[0][7..].Split(' ').Select(long.Parse).ToList();
         var smallestLocation = long.MaxValue;
         foreach (var seed in seeds)
         {
@@ -36,7 +36,7 @@ public class Day5 : Solution
 
     protected override string LogicPart2()
     {
-        var values = _inputLines[0][7..].Split(' ').Select(long.Parse).ToList();
+        var values = inputLines[0][7..].Split(' ').Select(long.Parse).ToList();
         var smallestLocation = long.MaxValue;
         for (int i = 0; i < values.Count; i += 2)
         {
@@ -64,63 +64,63 @@ public class Day5 : Solution
         var temperatureToHumidityLines = new List<string>();
         var humidityToLocationLines = new List<string>();
 
-        for (int i = 2; i < _inputLines.Length; i++)
+        for (int i = 2; i < inputLines.Length; i++)
         {
-            string? line = _inputLines[i];
+            string? line = inputLines[i];
 
             if (line == "seed-to-soil map:")
             {
-                while (_inputLines[++i] != "")
+                while (inputLines[++i] != "")
                 {
-                    seedToSoilLines.Add(_inputLines[i]);
+                    seedToSoilLines.Add(inputLines[i]);
                 }
                 _seedToSoil = Map.Parse(seedToSoilLines);
             }
             else if (line == "soil-to-fertilizer map:")
             {
-                while (_inputLines[++i] != "")
+                while (inputLines[++i] != "")
                 {
-                    soilToFertilizerLines.Add(_inputLines[i]);
+                    soilToFertilizerLines.Add(inputLines[i]);
                 }
                 _soilToFertilizer = Map.Parse(soilToFertilizerLines);
             }
             else if (line == "fertilizer-to-water map:")
             {
-                while (_inputLines[++i] != "")
+                while (inputLines[++i] != "")
                 {
-                    fertilizerToWaterLines.Add(_inputLines[i]);
+                    fertilizerToWaterLines.Add(inputLines[i]);
                 }
                 _fertilizerToWater = Map.Parse(fertilizerToWaterLines);
             }
             else if (line == "water-to-light map:")
             {
-                while (_inputLines[++i] != "")
+                while (inputLines[++i] != "")
                 {
-                    waterToLightLines.Add(_inputLines[i]);
+                    waterToLightLines.Add(inputLines[i]);
                 }
                 _waterToLight = Map.Parse(waterToLightLines);
             }
             else if (line == "light-to-temperature map:")
             {
-                while (_inputLines[++i] != "")
+                while (inputLines[++i] != "")
                 {
-                    lightToTemperatureLines.Add(_inputLines[i]);
+                    lightToTemperatureLines.Add(inputLines[i]);
                 }
                 _lightToTemperature = Map.Parse(lightToTemperatureLines);
             }
             else if (line == "temperature-to-humidity map:")
             {
-                while (_inputLines[++i] != "")
+                while (inputLines[++i] != "")
                 {
-                    temperatureToHumidityLines.Add(_inputLines[i]);
+                    temperatureToHumidityLines.Add(inputLines[i]);
                 }
                 _temperatureToHumidity = Map.Parse(temperatureToHumidityLines);
             }
             else if (line == "humidity-to-location map:")
             {
-                while (i < _inputLines.Length - 1 && _inputLines[++i] != "")
+                while (i < inputLines.Length - 1 && inputLines[++i] != "")
                 {
-                    humidityToLocationLines.Add(_inputLines[i]);
+                    humidityToLocationLines.Add(inputLines[i]);
                 }
                 _humidityToLocation = Map.Parse(humidityToLocationLines);
             }

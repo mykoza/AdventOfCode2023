@@ -11,9 +11,9 @@ public class Day3 : Solution
         var nums = new List<Number>();
         PadInputLines();
 
-        for (int i = 0; i < _inputLines.Length; i++)
+        for (int i = 0; i < inputLines.Length; i++)
         {
-            string line = _inputLines[i];
+            string line = inputLines[i];
             bool prevWasDigit = false;
             var number = new Number();
 
@@ -30,12 +30,12 @@ public class Day3 : Solution
                     if (!prevWasDigit && j > 0)
                     {
                         number.CheckAndSetHasSymbols(line[j-1]);
-                        number.CheckAndSetHasSymbols(_inputLines[i - 1][j - 1]);
-                        number.CheckAndSetHasSymbols(_inputLines[i + 1][j - 1]);
+                        number.CheckAndSetHasSymbols(inputLines[i - 1][j - 1]);
+                        number.CheckAndSetHasSymbols(inputLines[i + 1][j - 1]);
                     }
 
-                    number.CheckAndSetHasSymbols(_inputLines[i - 1][j]);
-                    number.CheckAndSetHasSymbols(_inputLines[i + 1][j]);
+                    number.CheckAndSetHasSymbols(inputLines[i - 1][j]);
+                    number.CheckAndSetHasSymbols(inputLines[i + 1][j]);
 
                     if (j == line.Length - 1)
                     {
@@ -52,8 +52,8 @@ public class Day3 : Solution
                 else if (prevWasDigit)
                 {
                     number.CheckAndSetHasSymbols(character);
-                    number.CheckAndSetHasSymbols(_inputLines[i - 1][j]);
-                    number.CheckAndSetHasSymbols(_inputLines[i + 1][j]);
+                    number.CheckAndSetHasSymbols(inputLines[i - 1][j]);
+                    number.CheckAndSetHasSymbols(inputLines[i + 1][j]);
 
                     if (number.HasSymbols)
                     {
@@ -73,9 +73,9 @@ public class Day3 : Solution
     {
         List<int> gearRatios = [];
 
-        for (int i = 0; i < _inputLines.Length; i++)
+        for (int i = 0; i < inputLines.Length; i++)
         {
-            string line = _inputLines[i];
+            string line = inputLines[i];
             List<Number> surroundingParts = [];
             List<Position> surroundingPositions = [];
 
@@ -128,9 +128,9 @@ public class Day3 : Solution
 
     private void PadInputLines()
     {
-        var blankLine = new char[_inputLines[0].Length];
+        var blankLine = new char[inputLines[0].Length];
         Array.Fill(blankLine, '.');
-        _inputLines = [new string(blankLine), .. _inputLines, new string(blankLine)];
+        inputLines = [new string(blankLine), .. inputLines, new string(blankLine)];
     }
 }
 

@@ -6,13 +6,13 @@ public class Day6 : Solution
 
     protected override string LogicPart1()
     {
-        var times = _inputLines[0]
+        var times = inputLines[0]
             .Split(':', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)[1]
             .Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
             .Select(int.Parse)
             .ToArray();
 
-        var distances = _inputLines[1]
+        var distances = inputLines[1]
             .Split(':', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)[1]
             .Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
             .Select(int.Parse)
@@ -38,13 +38,13 @@ public class Day6 : Solution
     {
         var time = long.Parse(
             string.Concat(
-                _inputLines[0]
+                inputLines[0]
                     .Split(':', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)[1]
                     .Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)));
 
         var distance = long.Parse(
             string.Concat(
-                _inputLines[1]
+                inputLines[1]
                     .Split(':', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)[1]
                     .Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)));
 

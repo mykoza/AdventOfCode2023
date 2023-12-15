@@ -6,16 +6,16 @@ public class Day2 : Solution
 
     protected override string LogicPart1()
     {
-        var possibleGames = new int[_inputLines.Length];
+        var possibleGames = new int[inputLines.Length];
         var maxNumbers = new Dictionary<string, int> (){
             {"red", 12 },
             {"green", 13},
             {"blue", 14}
         };
 
-        for (int i = 0; i < _inputLines.Length; i++)
+        for (int i = 0; i < inputLines.Length; i++)
         {
-            string line = _inputLines[i];
+            string line = inputLines[i];
             var split = line.Split(':');
             var game = split[0];
             var gameId = game.Split(' ')[1];
@@ -56,11 +56,11 @@ public class Day2 : Solution
 
     protected override string LogicPart2()
     {
-        var powers = new int[_inputLines.Length];
+        var powers = new int[inputLines.Length];
 
-        for (int i = 0; i < _inputLines.Length; i++)
+        for (int i = 0; i < inputLines.Length; i++)
         {
-            string line = _inputLines[i];
+            string line = inputLines[i];
             var split = line.Split(':');
             var game = split[0];
             var gameId = game.Split(' ')[1];

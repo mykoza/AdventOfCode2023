@@ -22,12 +22,12 @@ public class Day1 : Solution
 
     protected override string LogicPart1()
     {
-        int[] numbers = new int[_inputLines.Length];
+        int[] numbers = new int[inputLines.Length];
         var searchDigits = SearchValues.Create(_numbers);
 
-        for (int i = 0; i < _inputLines.Length; i++)
+        for (int i = 0; i < inputLines.Length; i++)
         {
-            string? line = _inputLines[i];
+            string? line = inputLines[i];
             var chars = new char[2];
 
             foreach (var character in line)
@@ -56,12 +56,12 @@ public class Day1 : Solution
 
     protected override string LogicPart2()
     {
-        int[] numbers = new int[_inputLines.Length];
+        int[] numbers = new int[inputLines.Length];
         var searchDigits = SearchValues.Create(_numbers);
 
-        for (int i = 0; i < _inputLines.Length; i++)
+        for (int i = 0; i < inputLines.Length; i++)
         {
-            string line = _inputLines[i];
+            string line = inputLines[i];
             int length = line.Length;
             var hits = new Dictionary<int, char>();
 

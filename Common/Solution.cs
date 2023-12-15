@@ -2,7 +2,7 @@
 
 public abstract class Solution
 {
-    protected string[] _inputLines = [];
+    protected string[] inputLines = [];
     protected abstract int DayNumber { get; init; }
 
     public void Run()
@@ -50,7 +50,7 @@ public abstract class Solution
 
     protected void ReadInput(string fileName)
     {
-        _inputLines = File.ReadAllLines(fileName);
+        inputLines = File.ReadAllLines(fileName);
     }
 
     protected virtual void BeforeLogic()

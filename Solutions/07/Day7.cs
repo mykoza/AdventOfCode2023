@@ -8,14 +8,14 @@ public class Day7 : Solution
 
     protected override string LogicPart1()
     {
-        var listOfHands = ListOfHands.Parse([.. _inputLines], 1);
+        var listOfHands = ListOfHands.Parse([.. inputLines], 1);
 
         return listOfHands.Value().ToString();
     }
 
     protected override string LogicPart2()
     {
-        var listOfHands = ListOfHands.Parse([.. _inputLines], 2);
+        var listOfHands = ListOfHands.Parse([.. inputLines], 2);
 
         return listOfHands.Value().ToString();
     }
