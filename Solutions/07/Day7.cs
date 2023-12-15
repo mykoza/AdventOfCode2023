@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2023;
+﻿using AdventOfCode2023.Day7Solution;
+
+namespace AdventOfCode2023;
 
 public class Day7 : Solution
 {

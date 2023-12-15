@@ -1,4 +1,4 @@
-namespace AdventOfCode2023;
+namespace AdventOfCode2023.Day7Solution;
 
 public class ListOfHands
 {
