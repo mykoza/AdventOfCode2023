@@ -30,8 +30,29 @@ public class Day8 : Solution
 
     protected override string LogicPart1()
     {
-        var foundZ = false;
         var currentNode = _nodes["AAA"];
+
+        var steps = FindNodeZ(currentNode, "ZZZ");
+
+        return steps.ToString();
+    }
+
+    protected override string LogicPart2()
+    {
+        var currentNodes = _nodes.Where(node => node.Value.Name.EndsWith('A')).ToDictionary();
+        var numOfSteps = new List<long>();
+
+        foreach (var node in currentNodes)
+        {
+            numOfSteps.Add(FindNodeZ(node.Value, "Z"));
+        }
+
+        return LeastCommonMultiple(numOfSteps).ToString();
+    }
+
+    private int FindNodeZ(Node currentNode, string endsWith)
+    {
+        var foundZ = false;
         var steps = 0;
 
         while (!foundZ)
@@ -49,7 +70,7 @@ public class Day8 : Solution
 
                 steps++;
 
-                if (currentNode.Name == "ZZZ")
+                if (currentNode.Name.EndsWith(endsWith))
                 {
                     foundZ = true;
                     break;
@@ -57,12 +78,22 @@ public class Day8 : Solution
             }
         }
 
-        return steps.ToString();
+        return steps;
     }
 
-    protected override string LogicPart2()
+    private static long LeastCommonMultiple(IEnumerable<long> numbers)
     {
-        throw new NotImplementedException();
+        return numbers.Aggregate(LeastCommonMultiple);
+    }
+
+    private static long LeastCommonMultiple(long a, long b)
+    {
+        return Math.Abs(a * b) / GreatestCommonDivisor(a, b);
+    }
+
+    private static long GreatestCommonDivisor(long a, long b)
+    {
+        return b == 0 ? a : GreatestCommonDivisor(b, a % b);
     }
 }
 
