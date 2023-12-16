@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2023;
+﻿using AdventOfCode2023.Common;
+
+namespace AdventOfCode2023;
 
 public class Day8 : Solution
 {
@@ -47,7 +49,7 @@ public class Day8 : Solution
             numOfSteps.Add(FindNodeZ(node.Value, "Z"));
         }
 
-        return LeastCommonMultiple(numOfSteps).ToString();
+        return Maths.LeastCommonMultiple(numOfSteps).ToString();
     }
 
     private int FindNodeZ(Node currentNode, string endsWith)
@@ -79,21 +81,6 @@ public class Day8 : Solution
         }
 
         return steps;
-    }
-
-    private static long LeastCommonMultiple(IEnumerable<long> numbers)
-    {
-        return numbers.Aggregate(LeastCommonMultiple);
-    }
-
-    private static long LeastCommonMultiple(long a, long b)
-    {
-        return Math.Abs(a * b) / GreatestCommonDivisor(a, b);
-    }
-
-    private static long GreatestCommonDivisor(long a, long b)
-    {
-        return b == 0 ? a : GreatestCommonDivisor(b, a % b);
     }
 }
 

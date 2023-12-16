@@ -1,4 +1,4 @@
-﻿namespace AdventOfCode2023;
+﻿namespace AdventOfCode2023.Common;
 
 public abstract class Solution
 {
@@ -7,7 +7,7 @@ public abstract class Solution
 
     public Solution()
     {
-        DayNumber = int.Parse(this.GetType().Name[3..]);
+        DayNumber = int.Parse(GetType().Name[3..]);
     }
 
     public void Run()

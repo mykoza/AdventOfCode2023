@@ -1,4 +1,5 @@
-﻿using AdventOfCode2023.Day7Solution;
+﻿using AdventOfCode2023.Common;
+using AdventOfCode2023.Day7Solution;
 
 namespace AdventOfCode2023;
 

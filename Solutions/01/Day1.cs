@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using AdventOfCode2023.Common;
 
 namespace AdventOfCode2023;
 

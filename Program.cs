@@ -1,4 +1,5 @@
 ﻿using AdventOfCode2023;
+using AdventOfCode2023.Common;
 
 Solution[] days = [ 
     // new Day1(),
