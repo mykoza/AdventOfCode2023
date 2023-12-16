@@ -10,6 +10,7 @@ Solution[] days = [
     new Day6(),
     new Day7(),
     new Day8(),
+    new Day9(),
 ];
 
 foreach (var day in days)
