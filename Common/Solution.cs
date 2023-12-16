@@ -3,7 +3,12 @@
 public abstract class Solution
 {
     protected string[] inputLines = [];
-    protected abstract int DayNumber { get; init; }
+    protected virtual int DayNumber { get; init; }
+
+    public Solution()
+    {
+        DayNumber = int.Parse(this.GetType().Name[3..]);
+    }
 
     public void Run()
     {
