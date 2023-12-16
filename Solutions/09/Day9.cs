@@ -16,71 +16,69 @@ public class Day9 : Solution
 
     protected override string LogicPart1()
     {
-        var predictions = new List<int>();
+        var sumOfPredictions = 0;
         foreach (var history in _histories)
         {
-            var differences = new List<List<int>>
+            var values = new List<List<int>>
             {
-                history
+                history,
             };
-            
-            var lastDifferences = new List<int>(history);
-            while (!lastDifferences.All(x => x == 0))
-            {
-                var currentDifferences = new List<int>();
-                for (int i = 1; i < lastDifferences.Count; i++)
-                {
-                    currentDifferences.Add(lastDifferences[i] - lastDifferences[i-1]);
-                }
 
-                differences.Add(currentDifferences);
-                lastDifferences = currentDifferences;
-            }
+            values.AddRange(CountDifferences(history));
 
             var prediction = 0;
-            for (int i = differences.Count - 2; i >= 0; i--)
+            for (int i = values.Count - 2; i >= 0; i--)
             {
-                prediction += differences[i].Last();
+                prediction += values[i].Last();
             }
 
-            predictions.Add(prediction);
+            sumOfPredictions += prediction;
         }
 
-        return predictions.Sum().ToString();
+        return sumOfPredictions.ToString();
     }
 
     protected override string LogicPart2()
     {
-        var predictions = new List<int>();
+        var sumOfPredictions = 0;
         foreach (var history in _histories)
         {
-            var differences = new List<List<int>>
+            var values = new List<List<int>>
             {
-                history
+                history,
             };
-            
-            var lastDifferences = new List<int>(history);
-            while (!lastDifferences.All(x => x == 0))
-            {
-                var currentDifferences = new List<int>();
-                for (int i = 1; i < lastDifferences.Count; i++)
-                {
-                    currentDifferences.Add(lastDifferences[i] - lastDifferences[i-1]);
-                }
 
-                differences.Add(currentDifferences);
-                lastDifferences = currentDifferences;
-            }
+            values.AddRange(CountDifferences(history));
 
             var prediction = 0;
-            for (int i = differences.Count - 2; i >= 0; i--)
+            for (int i = values.Count - 2; i >= 0; i--)
             {
-                prediction = differences[i][0] - prediction;
+                prediction = values[i][0] - prediction;
             }
 
-            predictions.Add(prediction);
+            sumOfPredictions += prediction;
         }
 
-        return predictions.Sum().ToString();
+        return sumOfPredictions.ToString();
+    }
+
+    private static List<List<int>> CountDifferences(List<int> initialValues)
+    {
+        var differences = new List<List<int>>();
+
+        var lastDifferences = initialValues;
+        while (!lastDifferences.All(x => x == 0))
+        {
+            var currentDifferences = new List<int>();
+            for (int i = 1; i < lastDifferences.Count; i++)
+            {
+                currentDifferences.Add(lastDifferences[i] - lastDifferences[i - 1]);
+            }
+
+            differences.Add(currentDifferences);
+            lastDifferences = currentDifferences;
+        }
+
+        return differences;
     }
 }
