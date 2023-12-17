@@ -6,36 +6,35 @@ public class Day10 : Solution
 {
     protected override string LogicPart1()
     {
-        var pointS = FindCoordinatesOfS(inputLines);
+        var pointS = FindCoordinatesOfS();
         var loop = new Loop(pointS);
 
-        var loopCompleted = false;
         Point? continuation;
-        var lastPoint = pointS;
+        var previousPoint = pointS;
         var direction = Direction.None;
-        while (!loopCompleted)
+        while (!loop.IsComplete)
         {
-            continuation = FindContinuation(lastPoint, direction);
+            continuation = FindContinuation(previousPoint, direction);
 
-            if (continuation == null || continuation == lastPoint)
+            if (continuation == null || continuation == previousPoint)
             {
                 throw new Exception("Could not find continuation");
             }
 
-            if (continuation.Character == 'S')
-            {
-                loopCompleted = true;
-            }
-
             loop.Add(continuation);
-            direction = ComputeDirection(lastPoint, continuation);
-            lastPoint = continuation;
+            direction = ComputeDirection(previousPoint, continuation);
+            previousPoint = continuation;
         }
 
         return loop.DistanceToFarthestPoint().ToString();
     }
 
-    private Point FindCoordinatesOfS(string[] inputLines)
+    protected override string LogicPart2()
+    {
+        throw new NotImplementedException();
+    }
+
+    private Point FindCoordinatesOfS()
     {
         for (int i = 0; i < inputLines.Length; i++)
         {
@@ -107,49 +106,45 @@ public class Day10 : Solution
         return null;
     }
 
-    private Direction ComputeDirection(Point previous, Point current)
+    private static Direction ComputeDirection(Point previous, Point current)
     {
-        var (X, Y) = current.Distance(previous);
+        var (X, Y) = ComputeCoordinatesDifference(previous, current);
 
-        if (X > 0)
+        return (X, Y) switch
         {
-            return Direction.Right;
-        }
-        else if (X < 0)
-        {
-            return Direction.Left;
-        }
-        else if (Y > 0)
-        {
-            return Direction.Down;
-        }
-        else
-        {
-            return Direction.Up;
-        }
+            (> 0, _) => Direction.Right,
+            (< 0, _) => Direction.Left,
+            (_, > 0) => Direction.Down,
+            _ => Direction.Up
+        };
     }
 
-    protected override string LogicPart2()
+    private static (int X, int Y) ComputeCoordinatesDifference(Point previous, Point current)
     {
-        throw new NotImplementedException();
+        return (
+            current.Coordinates.X - previous.Coordinates.X,
+            current.Coordinates.Y - previous.Coordinates.Y
+        );
     }
 }
 
 public class Loop
 {
     private readonly List<Point> _characters = [];
-    private bool _finished = false;
+    private bool _isComplete = false;
 
     public Loop(Point startingPoint)
     {
         _characters.Add(startingPoint);
     }
 
+    public bool IsComplete => _isComplete;
+
     public void Add(Point point)
     {
         if (point.Character == 'S')
         {
-            _finished = true;
+            _isComplete = true;
             return;
         }
 
@@ -171,14 +166,21 @@ public enum Direction
     None
 }
 
-public record Point(char Character, Coordinates Coordinates)
+public record Point
 {
-    public (int X, int Y) Distance(Point other)
+    public char Character { get; init; }
+    public Coordinates Coordinates { get; init; }
+
+    public Point(char character, Coordinates coordinates)
     {
-        return (
-            Coordinates.X - other.Coordinates.X,
-            Coordinates.Y - other.Coordinates.Y
-        );
+        Character = character;
+        Coordinates = coordinates;
+    }
+
+    public Point(char character, int x, int y)
+    {
+        Character = character;
+        Coordinates = new Coordinates(x, y);
     }
 };
 
