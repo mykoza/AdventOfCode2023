@@ -19,12 +19,13 @@ public class Day11 : Solution
 
     protected override string LogicPart1()
     {
+        var expandedGalaxies = ExpandGalaxies(2);
         var length = 0;
-        for (int i = 0; i < _galaxies.Count; i++)
+        for (int i = 0; i < expandedGalaxies.Count; i++)
         {
-            for (int j = i + 1; j < _galaxies.Count; j++)
+            for (int j = i + 1; j < expandedGalaxies.Count; j++)
             {
-                length += CalculateDistance(_galaxies[i], _galaxies[j], 2);
+                length += CalculateDistance(expandedGalaxies[i], expandedGalaxies[j]);
             }
         }
 
@@ -33,14 +34,15 @@ public class Day11 : Solution
 
     protected override string LogicPart2()
     {
+        var expandedGalaxies = ExpandGalaxies(1_000_000);
         long length = 0;
-        for (int i = 0; i < _galaxies.Count; i++)
+        for (int i = 0; i < expandedGalaxies.Count; i++)
         {
-            for (int j = i + 1; j < _galaxies.Count; j++)
+            for (int j = i + 1; j < expandedGalaxies.Count; j++)
             {
                 checked
                 {
-                    length += CalculateDistance(_galaxies[i], _galaxies[j], 1_000_000);
+                    length += CalculateDistance(expandedGalaxies[i], expandedGalaxies[j]);
                 }
             }
         }
@@ -88,20 +90,31 @@ public class Day11 : Solution
         }
     }
 
-    private int CalculateDistance((int X, int Y) galaxy, (int X, int Y) target, int expansionFactor)
+    private List<(int X, int Y)> ExpandGalaxies(int expansionFactor)
     {
         expansionFactor -= 1;
+        var expanded = new List<(int X, int Y)>(_galaxies.Count);
 
-        var numOfEmptyLinesCrossed = _emptyLines
-            .Count(lineNum => lineNum > Math.Min(galaxy.Y, target.Y) && lineNum < Math.Max(galaxy.Y, target.Y));
+        for (int i = 0; i < _galaxies.Count; i++)
+        {
+            var numOfEmptyLinesCrossed = _emptyLines
+                .Count(lineNum => lineNum < _galaxies[i].Y);
 
-        var numOfEmptyColumnsCrossed = _emptyColumns
-            .Count(columnNum => columnNum > Math.Min(galaxy.X, target.X) && columnNum < Math.Max(galaxy.X, target.X));
+            var numOfEmptyColumnsCrossed = _emptyColumns
+                .Count(lineNum => lineNum < _galaxies[i].X);
 
-        return Math.Abs(galaxy.X - target.X)
-               + Math.Abs(galaxy.Y - target.Y)
-               + (numOfEmptyLinesCrossed * expansionFactor)
-               + (numOfEmptyColumnsCrossed * expansionFactor);
+            expanded.Add((
+                _galaxies[i].X + numOfEmptyColumnsCrossed * expansionFactor,
+                _galaxies[i].Y + numOfEmptyLinesCrossed * expansionFactor
+            ));
+        }
+
+        return expanded;
+    }
+
+    private int CalculateDistance((int X, int Y) galaxy, (int X, int Y) target)
+    {
+        return Math.Abs(galaxy.X - target.X) + Math.Abs(galaxy.Y - target.Y);
     }
 }
 
