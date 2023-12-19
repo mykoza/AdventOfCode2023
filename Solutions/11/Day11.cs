@@ -4,66 +4,27 @@ namespace AdventOfCode2023;
 
 public class Day11 : Solution
 {
-    private readonly List<string> _expandedImage = [];
+    private readonly List<int> _emptyLines = [];
+    private readonly List<int> _emptyColumns = [];
+    private readonly List<(int X, int Y)> _galaxies = [];
+
     protected override void BeforeLogic()
     {
         base.BeforeLogic();
 
-        // expand lines
-        for (int i = 0; i < inputLines.Length; i++)
-        {
-            string? line = inputLines[i];
-            _expandedImage.Add(line);
-            
-            if (!line.Contains('#'))
-            {
-                _expandedImage.Add(line);
-            }
-        }
-
-        // expand columns
-        for (int i = 0; i < _expandedImage[0].Length; i++)
-        {
-            var columnIsEmpty = !_expandedImage
-                .Select(x => x[i])
-                .Any(x => x == '#');
-            
-            if (columnIsEmpty)
-            {
-                for (int j = 0; j < _expandedImage.Count; j++)
-                {
-                    string? line = _expandedImage[j];
-                    _expandedImage[j] = line.Insert(i + 1, ".");
-                }
-
-                i++;
-            }
-        }
+        FindEmptyLines();
+        FindEmptyColumns();
+        FindGalaxies();
     }
 
     protected override string LogicPart1()
     {
-        var galaxies = new List<(int X, int Y)>();
-
-        for (int i = 0; i < _expandedImage.Count; i++)
-        {
-            for (int j = 0; j < _expandedImage[i].Length; j++)
-            {
-                if (_expandedImage[i][j] == '#')
-                {
-                    galaxies.Add((j, i));
-                }
-            }
-        }
-
         var length = 0;
-        for (int i = 0; i < galaxies.Count; i++)
+        for (int i = 0; i < _galaxies.Count; i++)
         {
-            (int X, int Y) galaxy = galaxies[i];
-
-            for (int j = i + 1; j < galaxies.Count; j++)
+            for (int j = i + 1; j < _galaxies.Count; j++)
             {
-                length += CalculateDistance(galaxies[i], galaxies[j]);
+                length += CalculateDistance(_galaxies[i], _galaxies[j], 2);
             }
         }
 
@@ -72,12 +33,75 @@ public class Day11 : Solution
 
     protected override string LogicPart2()
     {
-        throw new NotImplementedException();
+        long length = 0;
+        for (int i = 0; i < _galaxies.Count; i++)
+        {
+            for (int j = i + 1; j < _galaxies.Count; j++)
+            {
+                checked
+                {
+                    length += CalculateDistance(_galaxies[i], _galaxies[j], 1_000_000);
+                }
+            }
+        }
+
+        return length.ToString();
     }
 
-    private static int CalculateDistance((int X, int Y) galaxy, (int X, int Y) target)
+    private void FindEmptyLines()
     {
-        return Math.Abs(galaxy.X - target.X) + Math.Abs(galaxy.Y - target.Y);
+        for (int i = 0; i < inputLines.Length; i++)
+        {
+            if (!inputLines[i].Contains('#'))
+            {
+                _emptyLines.Add(i);
+            }
+        }
+    }
+    
+    private void FindEmptyColumns()
+    {
+        for (int i = 0; i < inputLines[0].Length; i++)
+        {
+            var columnIsEmpty = !inputLines
+                .Select(x => x[i])
+                .Any(x => x == '#');
+
+            if (columnIsEmpty)
+            {
+                _emptyColumns.Add(i);
+            }
+        }
+    }
+    
+    private void FindGalaxies()
+    {
+        for (int i = 0; i < inputLines.Length; i++)
+        {
+            for (int j = 0; j < inputLines[i].Length; j++)
+            {
+                if (inputLines[i][j] == '#')
+                {
+                    _galaxies.Add((j, i));
+                }
+            }
+        }
+    }
+
+    private int CalculateDistance((int X, int Y) galaxy, (int X, int Y) target, int expansionFactor)
+    {
+        expansionFactor -= 1;
+
+        var numOfEmptyLinesCrossed = _emptyLines
+            .Count(lineNum => lineNum > Math.Min(galaxy.Y, target.Y) && lineNum < Math.Max(galaxy.Y, target.Y));
+
+        var numOfEmptyColumnsCrossed = _emptyColumns
+            .Count(columnNum => columnNum > Math.Min(galaxy.X, target.X) && columnNum < Math.Max(galaxy.X, target.X));
+
+        return Math.Abs(galaxy.X - target.X)
+               + Math.Abs(galaxy.Y - target.Y)
+               + (numOfEmptyLinesCrossed * expansionFactor)
+               + (numOfEmptyColumnsCrossed * expansionFactor);
     }
 }
 
