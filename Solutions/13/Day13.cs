@@ -1,30 +1,16 @@
-﻿using AdventOfCode2023.Common;
+﻿using System.Collections.Immutable;
+using AdventOfCode2023.Common;
 
 namespace AdventOfCode2023;
 
 public class Day13 : Solution
 {
-    private readonly List<List<string>> _patterns = [];
-    private List<string> _linesOfReflection = [];
+    private IList<IList<string>> _patterns = [];
     protected override void BeforeLogic()
     {
         base.BeforeLogic();
 
-        var pattern = new List<string>();
-        for (int i = 0; i < inputLines.Length; i++)
-        {
-            string? line = inputLines[i];
-            if (string.IsNullOrEmpty(line))
-            {
-                _patterns.Add(pattern);
-                pattern = [];
-                continue;
-            }
-
-            pattern.Add(line);
-        }
-
-        _patterns.Add(pattern);
+        _patterns = inputLines.Split("").ToImmutableList();
     }
 
     protected override string LogicPart1()
@@ -33,7 +19,7 @@ public class Day13 : Solution
 
         for (int i = 0; i < _patterns.Count; i++)
         {
-            List<string>? pattern = _patterns[i];
+            IList<string>? pattern = _patterns[i];
 
             var totalRowsAbove = CountRowsAboveForPattern(pattern, 0);
 
@@ -56,7 +42,7 @@ public class Day13 : Solution
 
         for (int i = 0; i < _patterns.Count; i++)
         {
-            List<string>? pattern = _patterns[i];
+            IList<string>? pattern = _patterns[i];
 
             var totalRowsAbove = CountRowsAboveForPattern(pattern, 1);
 
@@ -73,11 +59,11 @@ public class Day13 : Solution
         return res.ToString();
     }
 
-    private int CountRowsAboveForPattern(List<string> pattern, int acceptableErrors)
+    private static int CountRowsAboveForPattern(IList<string> pattern, int acceptableErrors)
     {
         for (int i = 0; i < pattern.Count; i++)
         {
-            if (CheckIfLinesReflected(pattern, i, acceptableErrors) > 0)
+            if (CheckIfLinesReflected(pattern, i, acceptableErrors))
             {
                 return i + 1;
             }
@@ -86,11 +72,11 @@ public class Day13 : Solution
         return 0;
     }
 
-    private int CountColumnsBeforeForPattern(List<string> pattern, int acceptableErrors)
+    private static int CountColumnsBeforeForPattern(IList<string> pattern, int acceptableErrors)
     {
         for (int i = 0; i < pattern[0].Length; i++)
         {
-            if (CheckIfColumnsReflected(pattern, i, acceptableErrors) > 0)
+            if (ColumnsReflected(pattern, i, acceptableErrors))
             {
                 return i + 1;
             }
@@ -99,7 +85,7 @@ public class Day13 : Solution
         return 0;
     }
 
-    private int CheckIfLinesReflected(List<string> pattern, int lineStartIndex, int acceptableErrors = 0)
+    private static bool CheckIfLinesReflected(IList<string> pattern, int lineStartIndex, int acceptableErrors = 0)
     {
         var numOfLinesToCompare = Math.Min(lineStartIndex + 1, pattern.Count - lineStartIndex - 1);
         var errors = 0;
@@ -117,13 +103,13 @@ public class Day13 : Solution
 
         if (errors == acceptableErrors)
         {
-            return numOfLinesToCompare;
+            return true;
         }
 
-        return -1;
+        return false;
     }
 
-    private int CheckIfColumnsReflected(List<string> pattern, int columnStartIndex, int acceptableErrors = 0)
+    private static bool ColumnsReflected(IList<string> pattern, int columnStartIndex, int acceptableErrors = 0)
     {
         var numOfColumnsToCompare = Math.Min(columnStartIndex + 1, pattern[0].Length - columnStartIndex - 1);
         var errors = 0;
@@ -144,9 +130,9 @@ public class Day13 : Solution
 
         if (errors == acceptableErrors)
         {
-            return numOfColumnsToCompare;
+            return true;
         }
 
-        return -1;
+        return false;
     }
 }
