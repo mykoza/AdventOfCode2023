@@ -7,7 +7,7 @@ public class Day14 : Solution
     protected override string LogicPart1()
     {
         var tilted = new List<string>(inputLines);
-        TiltPlatformNorth(ref tilted);
+        TiltPlatformNorth(tilted);
         var load = CalculateTotalLoad(tilted);
         return load.ToString();
     }
@@ -32,10 +32,10 @@ public class Day14 : Solution
 
             states[hash] = i;
 
-            TiltPlatformNorth(ref tilted);
-            TiltPlatformWest(ref tilted);
-            TiltPlatformSouth(ref tilted);
-            TiltPlatformEast(ref tilted);
+            TiltPlatformNorth(tilted);
+            TiltPlatformWest(tilted);
+            TiltPlatformSouth(tilted);
+            TiltPlatformEast(tilted);
         }
 
         var load = CalculateTotalLoad(tilted);
@@ -47,7 +47,7 @@ public class Day14 : Solution
         return platform.Aggregate(0L, (acc, x) => x.GetHashCode() ^ acc);
     }
 
-    private static void TiltPlatformNorth(ref List<string> platform)
+    private static void TiltPlatformNorth(IList<string> platform)
     {
         int rowLength = platform[0].Length;
         int rowCount = platform.Count;
@@ -74,7 +74,7 @@ public class Day14 : Solution
         }
     }
 
-    private static void TiltPlatformWest(ref List<string> platform)
+    private static void TiltPlatformWest(IList<string> platform)
     {
         int rowCount = platform.Count;
         int rowLength = platform[0].Length;
@@ -101,7 +101,7 @@ public class Day14 : Solution
         }
     }
 
-    private static void TiltPlatformSouth(ref List<string> platform)
+    private static void TiltPlatformSouth(IList<string> platform)
     {
         int rowLength = platform[0].Length;
         int rowCount = platform.Count;
@@ -128,7 +128,7 @@ public class Day14 : Solution
         }
     }
 
-    private static void TiltPlatformEast(ref List<string> platform)
+    private static void TiltPlatformEast(IList<string> platform)
     {
         int rowCount = platform.Count;
         int rowLength = platform[0].Length;
