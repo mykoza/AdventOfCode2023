@@ -1,3 +1,5 @@
+using AdventOfCode2023.Common;
+
 namespace AdventOfCode2023.Day10Solution;
 
 public static class GridHelpers
@@ -85,13 +87,4 @@ public static class AllowedContinuations
             _ => throw new Exception("Invalid character"),
         };
     }
-}
-
-public enum Direction
-{
-    Up,
-    Down,
-    Left,
-    Right,
-    None
 }

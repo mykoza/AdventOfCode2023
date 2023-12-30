@@ -1,3 +1,5 @@
+using AdventOfCode2023.Common;
+
 namespace AdventOfCode2023.Day10Solution;
 
 public class Loop
