@@ -140,89 +140,89 @@ public class Day5 : Solution
         var location = _humidityToLocation.GetDestination(humidity);
         return location;
     }
-}
 
-public class Map
-{
-    private readonly List<Range> _ranges = [];
-
-    public Map() { }
-
-    public Map(List<Range> ranges)
+    public class Map
     {
-        _ranges = [.. ranges.OrderBy(range => range.DestinationStart)];
-    }
+        private readonly List<Range> _ranges = [];
 
-    public static Map Parse(List<string> input)
-    {
-        var map = new Map();
+        public Map() { }
 
-        foreach (var line in input)
+        public Map(List<Range> ranges)
         {
-            var split = line.Split(' ');
-            var destinationStart = long.Parse(split[0]);
-            var sourceStart = long.Parse(split[1]);
-            var range = int.Parse(split[2]);
-
-            map.AddRange(new Range(sourceStart, destinationStart, range));
+            _ranges = [.. ranges.OrderBy(range => range.DestinationStart)];
         }
 
-        return map;
-    }
-
-    public void AddRange(Range range)
-    {
-        var index = _ranges.FindIndex(r => r.DestinationStart > range.DestinationStart);
-
-        if (index < 0)
+        public static Map Parse(List<string> input)
         {
-            index = _ranges.Count;
-        }
+            var map = new Map();
 
-        _ranges.Insert(index, range);
-    }
-
-    public long GetDestination(long source)
-    {
-        foreach (var range in _ranges)
-        {
-            if (range.TryGetDestination(source, out long destination))
+            foreach (var line in input)
             {
-                return destination;
+                var split = line.Split(' ');
+                var destinationStart = long.Parse(split[0]);
+                var sourceStart = long.Parse(split[1]);
+                var range = int.Parse(split[2]);
+
+                map.AddRange(new Range(sourceStart, destinationStart, range));
             }
+
+            return map;
         }
 
-        return source;
-    }
-
-    public long GetSmallestDestinationForRange(long source, long range)
-    {
-        return 1;
-    }
-}
-
-public class Range(long sourceStart, long destinationStart, long range)
-{
-    private readonly long _sourceStart = sourceStart;
-    private readonly long _sourceEnd = sourceStart + range - 1;
-    private readonly long _destinationStart = destinationStart;
-    private readonly long _destinationEnd = destinationStart + range - 1;
-    private readonly long _range = range;
-    private readonly long _shift = destinationStart - sourceStart;
-
-    public long SourceStart => _sourceStart;
-
-    public long DestinationStart => _destinationStart;
-
-    public bool TryGetDestination(long source, out long destination)
-    {
-        if (source >= _sourceStart && source <= _sourceEnd)
+        public void AddRange(Range range)
         {
-            destination = source + _shift;
-            return true;
+            var index = _ranges.FindIndex(r => r.DestinationStart > range.DestinationStart);
+
+            if (index < 0)
+            {
+                index = _ranges.Count;
+            }
+
+            _ranges.Insert(index, range);
         }
 
-        destination = -1;
-        return false;
+        public long GetDestination(long source)
+        {
+            foreach (var range in _ranges)
+            {
+                if (range.TryGetDestination(source, out long destination))
+                {
+                    return destination;
+                }
+            }
+
+            return source;
+        }
+
+        public long GetSmallestDestinationForRange(long source, long range)
+        {
+            return 1;
+        }
+    }
+
+    public class Range(long sourceStart, long destinationStart, long range)
+    {
+        private readonly long _sourceStart = sourceStart;
+        private readonly long _sourceEnd = sourceStart + range - 1;
+        private readonly long _destinationStart = destinationStart;
+        private readonly long _destinationEnd = destinationStart + range - 1;
+        private readonly long _range = range;
+        private readonly long _shift = destinationStart - sourceStart;
+
+        public long SourceStart => _sourceStart;
+
+        public long DestinationStart => _destinationStart;
+
+        public bool TryGetDestination(long source, out long destination)
+        {
+            if (source >= _sourceStart && source <= _sourceEnd)
+            {
+                destination = source + _shift;
+                return true;
+            }
+
+            destination = -1;
+            return false;
+        }
     }
 }

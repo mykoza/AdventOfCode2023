@@ -88,7 +88,7 @@ public class Day1 : Solution
                 }
             }
 
-            AfterFirstDigit:
+        AfterFirstDigit:
 
             // find last digit and break
             for (int j = length - 1; j >= 0; j--)
@@ -112,20 +112,21 @@ public class Day1 : Solution
                 }
             }
 
-            AfterLastDigit:
+        AfterLastDigit:
 
             numbers[i] = int.Parse([hits.Values.First(), hits.Values.Last()]);
         }
 
         return numbers.Sum().ToString();
     }
+
+    public readonly struct WordNumber(string word, char digit)
+    {
+        public string Word { get; init; } = word;
+        public char Digit { get; init; } = digit;
+        public char FirstLetter { get; init; } = word[0];
+        public int Length { get; init; } = word.Length;
+    }
 }
 
 
-public readonly struct WordNumber(string word, char digit)
-{
-    public string Word { get; init; } = word;
-    public char Digit { get; init; } = digit;
-    public char FirstLetter { get; init; } = word[0];
-    public int Length { get; init; } = word.Length;
-}

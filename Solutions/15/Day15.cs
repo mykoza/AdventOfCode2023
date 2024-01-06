@@ -69,39 +69,39 @@ class Day15 : Solution
 
         return currentVal;
     }
-}
 
-class Box
-{
-    private readonly OrderedDictionary _lenses = [];
-
-    public void AddLens(Lens lens)
+    class Box
     {
-        if (_lenses.Contains(lens.Label))
+        private readonly OrderedDictionary _lenses = [];
+
+        public void AddLens(Lens lens)
         {
-            _lenses[lens.Label] = lens.FocalLength;
-            return;
+            if (_lenses.Contains(lens.Label))
+            {
+                _lenses[lens.Label] = lens.FocalLength;
+                return;
+            }
+
+            _lenses.Add(lens.Label, lens.FocalLength);
         }
 
-        _lenses.Add(lens.Label, lens.FocalLength);
-    }
-
-    public void RemoveLens(string label)
-    {
-        _lenses.Remove(label);
-    }
-
-    public int FocusingPower()
-    {
-        var res = 0;
-
-        for (int i = 0; i < _lenses.Count; i++)
+        public void RemoveLens(string label)
         {
-            res += (i + 1) * (int)_lenses[i];
+            _lenses.Remove(label);
         }
 
-        return res;
-    }
-}
+        public int FocusingPower()
+        {
+            var res = 0;
 
-record Lens(string Label, int FocalLength);
+            for (int i = 0; i < _lenses.Count; i++)
+            {
+                res += (i + 1) * (int)_lenses[i];
+            }
+
+            return res;
+        }
+    }
+
+    record Lens(string Label, int FocalLength);
+}

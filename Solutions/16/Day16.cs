@@ -8,6 +8,8 @@ public class Day16 : Solution
     private readonly Dictionary<Coordinates, int> _energizedTiles = [];
     private readonly Dictionary<(Coordinates, Direction), int> _beamHistory = [];
 
+    protected override bool UseExample => false;
+
     protected override string LogicPart1()
     {
         RunBeam(Direction.Right, (0, 0));
@@ -109,7 +111,7 @@ public class Day16 : Solution
             return false;
         }
 
-        char c = inputLines[beam.Coordinates.rowIndex][beam.Coordinates.columnIndex];
+        char c = inputLines[beam.Coordinates.RowIndex][beam.Coordinates.ColumnIndex];
         if (c == '.')
         {
             ChangePosition(beam);
@@ -168,16 +170,16 @@ public class Day16 : Solution
         switch (beam.Direction)
         {
             case Direction.Up:
-                beam.Coordinates = (beam.Coordinates.rowIndex - 1, beam.Coordinates.columnIndex);
+                beam.Coordinates = (beam.Coordinates.RowIndex - 1, beam.Coordinates.ColumnIndex);
                 break;
             case Direction.Down:
-                beam.Coordinates = (beam.Coordinates.rowIndex + 1, beam.Coordinates.columnIndex);
+                beam.Coordinates = (beam.Coordinates.RowIndex + 1, beam.Coordinates.ColumnIndex);
                 break;
             case Direction.Left:
-                beam.Coordinates = (beam.Coordinates.rowIndex, beam.Coordinates.columnIndex - 1);
+                beam.Coordinates = (beam.Coordinates.RowIndex, beam.Coordinates.ColumnIndex - 1);
                 break;
             case Direction.Right:
-                beam.Coordinates = (beam.Coordinates.rowIndex, beam.Coordinates.columnIndex + 1);
+                beam.Coordinates = (beam.Coordinates.RowIndex, beam.Coordinates.ColumnIndex + 1);
                 break;
             case Direction.None:
                 throw new Exception("Cannot move");
@@ -216,10 +218,10 @@ public class Day16 : Solution
 
     private bool CoordinatesOutOfBound(Coordinates coordinates)
     {
-        return coordinates.rowIndex < 0
-            || coordinates.columnIndex < 0
-            || coordinates.rowIndex >= inputLines.Length
-            || coordinates.columnIndex >= inputLines[0].Length;
+        return coordinates.RowIndex < 0
+            || coordinates.ColumnIndex < 0
+            || coordinates.RowIndex >= inputLines.Length
+            || coordinates.ColumnIndex >= inputLines[0].Length;
     }
 
     private record Beam

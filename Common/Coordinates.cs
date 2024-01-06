@@ -2,42 +2,42 @@ namespace AdventOfCode2023.Common;
 
 public readonly struct Coordinates
 {
-    public readonly int rowIndex;
-    public readonly int columnIndex;
+    public int RowIndex { get; init; }
+    public int ColumnIndex { get; init; }
 
     public Coordinates()
     {
-        rowIndex = 0;
-        columnIndex = 0;
+        RowIndex = 0;
+        ColumnIndex = 0;
     }
 
     public Coordinates(int rowIndex, int columnIndex)
     {
-        this.rowIndex = rowIndex;
-        this.columnIndex = columnIndex;
+        RowIndex = rowIndex;
+        ColumnIndex = columnIndex;
     }
 
     public override bool Equals(object? obj)
     {
         return obj is Coordinates other &&
-               rowIndex == other.rowIndex &&
-               columnIndex == other.columnIndex;
+               RowIndex == other.RowIndex &&
+               ColumnIndex == other.ColumnIndex;
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(rowIndex, columnIndex);
+        return HashCode.Combine(RowIndex, ColumnIndex);
     }
 
     public void Deconstruct(out int rowIndex, out int columnIndex)
     {
-        rowIndex = this.rowIndex;
-        columnIndex = this.columnIndex;
+        rowIndex = RowIndex;
+        columnIndex = ColumnIndex;
     }
 
     public static implicit operator (int rowIndex, int columnIndex)(Coordinates value)
     {
-        return (value.rowIndex, value.columnIndex);
+        return (value.RowIndex, value.ColumnIndex);
     }
 
     public static implicit operator Coordinates((int rowIndex, int columnIndex) value)

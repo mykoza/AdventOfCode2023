@@ -49,7 +49,7 @@ public class Day10 : Solution
                 {
                     return new Pipe(
                         'S',
-                        new Coordinates(j, i));
+                        new Day10Solution.Coordinates(j, i));
                 }
             }
         }
@@ -65,7 +65,7 @@ public class Day10 : Solution
             {
                 return new Pipe(
                     inputLines[point.Coordinates.Y - 1][point.Coordinates.X],
-                    new Coordinates(
+                    new Day10Solution.Coordinates(
                         point.Coordinates.X,
                         point.Coordinates.Y - 1));
             }
@@ -77,7 +77,7 @@ public class Day10 : Solution
             {
                 return new Pipe(
                     inputLines[point.Coordinates.Y][point.Coordinates.X + 1],
-                    new Coordinates(
+                    new Day10Solution.Coordinates(
                         point.Coordinates.X + 1,
                         point.Coordinates.Y));
             }
@@ -89,7 +89,7 @@ public class Day10 : Solution
             {
                 return new Pipe(
                     inputLines[point.Coordinates.Y][point.Coordinates.X - 1],
-                    new Coordinates(
+                    new Day10Solution.Coordinates(
                         point.Coordinates.X - 1,
                         point.Coordinates.Y));
             }
@@ -101,7 +101,7 @@ public class Day10 : Solution
             {
                 return new Pipe(
                     inputLines[point.Coordinates.Y + 1][point.Coordinates.X],
-                    new Coordinates(
+                    new Day10Solution.Coordinates(
                         point.Coordinates.X,
                         point.Coordinates.Y + 1));
             }

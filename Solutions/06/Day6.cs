@@ -55,20 +55,21 @@ public class Day6 : Solution
 
         return attempts.NumberOfWinningAttempts().ToString();
     }
-}
 
-public class Attempts(Race race)
-{
-    private readonly Race _race = race;
-
-    public int NumberOfWinningAttempts()
+    public class Attempts(Race race)
     {
-        var sqrtDelta = Math.Sqrt(Math.Pow(_race.Time, 2) - 4 * _race.RecordDistance);
-        var left = Math.Floor(((-_race.Time + sqrtDelta) / -2) + 1);
-        var right = Math.Ceiling(((-_race.Time - sqrtDelta) / -2) - 1);
+        private readonly Race _race = race;
 
-        return (int)(right - left + 1);
+        public int NumberOfWinningAttempts()
+        {
+            var sqrtDelta = Math.Sqrt(Math.Pow(_race.Time, 2) - 4 * _race.RecordDistance);
+            var left = Math.Floor(((-_race.Time + sqrtDelta) / -2) + 1);
+            var right = Math.Ceiling(((-_race.Time - sqrtDelta) / -2) - 1);
+
+            return (int)(right - left + 1);
+        }
     }
+
+    public record Race(long Time, long RecordDistance);
 }
 
-public record Race(long Time, long RecordDistance);

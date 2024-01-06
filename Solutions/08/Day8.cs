@@ -82,13 +82,13 @@ public class Day8 : Solution
 
         return steps;
     }
-}
 
-public class Node(string name, Node? left = null, Node? right = null)
-{
-    private readonly string _name = name;
-    public Node? Left { get; set; } = left;
-    public Node? Right { get; set; } = right;
+    public class Node(string name, Node? left = null, Node? right = null)
+    {
+        private readonly string _name = name;
+        public Node? Left { get; set; } = left;
+        public Node? Right { get; set; } = right;
 
-    public string Name => _name;
+        public string Name => _name;
+    }
 }
