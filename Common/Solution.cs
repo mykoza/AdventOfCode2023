@@ -4,6 +4,7 @@ public abstract class Solution
 {
     protected string[] inputLines = [];
     protected virtual int DayNumber { get; init; }
+    protected virtual bool UseExample => false;
 
     public Solution()
     {
@@ -27,7 +28,7 @@ public abstract class Solution
     protected bool ReadInputFile()
     {
         string fileName = GetInputFileName();
-        if (File.Exists(fileName))
+        if (!UseExample && File.Exists(fileName))
         {
             ReadInput(fileName);
             return true;
