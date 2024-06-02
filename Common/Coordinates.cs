@@ -54,4 +54,14 @@ public readonly struct Coordinates
     {
         return !(left == right);
     }
+
+    public static Coordinates operator +(Coordinates left, Coordinates right)
+    {
+        return new Coordinates(left.RowIndex + right.RowIndex, left.ColumnIndex + right.ColumnIndex);
+    }
+
+    public static Coordinates operator -(Coordinates left, Coordinates right)
+    {
+        return new Coordinates(left.RowIndex - right.RowIndex, left.ColumnIndex - right.ColumnIndex);
+    }
 }

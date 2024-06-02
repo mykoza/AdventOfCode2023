@@ -1,3 +1,4 @@
 bin
 obj
 Inputs/**/input.txt
+.fake
