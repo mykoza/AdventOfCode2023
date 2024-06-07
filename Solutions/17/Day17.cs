@@ -4,38 +4,34 @@ namespace AdventOfCode2023;
 
 public class Day17 : Solution
 {
-    private Node[,] Map { get; set; }
-    private Dictionary<int, Node> Graph { get; set; } = [];
-    private int _numOfOperations = 0;
-
     protected override bool UseExample => false;
+    private int _numOfNodes = 0;
+    private Node[,] Map { get; set; } = new Node[1, 1];
+    private Dictionary<int, Node> Graph { get; set; } = [];
+    private delegate bool CanContinueDelegate(NodeIdentifier prev, NodeIdentifier next);
 
     protected override void BeforeLogic()
     {
         base.BeforeLogic();
 
         ParseInputMap();
+
+        _numOfNodes = Map.Length;
     }
 
     protected override string LogicPart1()
     {
-        var cost = AStarPart1();
-
-        Console.WriteLine($"Number of operations {_numOfOperations}");
-
-
-        // Console.WriteLine(path[1..].Aggregate($"({path[0].Coordinates.RowIndex}, {path[0].Coordinates.ColumnIndex})", (acc, node) => $"{acc} -> ({node.Coordinates.RowIndex}, {node.Coordinates.ColumnIndex})")); ;
-        // Console.WriteLine(path[1..].Sum(node => node.Cost).ToString());
-
+        var cost = AStar(CanContinuePart1);
         return cost.ToString();
     }
 
     protected override string LogicPart2()
     {
-        throw new NotImplementedException();
+        var cost = AStar(CanContinuePart2);
+        return cost.ToString();
     }
 
-    private int AStarPart1()
+    private int AStar(CanContinueDelegate canContinueDelegate)
     {
         var start = Graph.First().Value;
         var goal = Graph.Last().Value;
@@ -43,83 +39,62 @@ public class Day17 : Solution
             start
         };
 
-        // rowIndex, columnIndex, fromDirection, speed
         var cameFrom = new Dictionary<NodeIdentifier, Node>();
 
-        var gScore = new Dictionary<NodeIdentifier, int>();
-        gScore[start.ToIdentifier()] = 0;
+        var gScore = new Dictionary<NodeIdentifier, int>
+        {
+            [start.ToIdentifier()] = 0
+        };
 
-        var fScore = new Dictionary<NodeIdentifier, int>();
-        fScore[start.ToIdentifier()] = AStarEstimator(start, goal);
+        var fScore = new Dictionary<NodeIdentifier, int>
+        {
+            [start.ToIdentifier()] = AStarEstimator(start, goal)
+        };
 
         while (openSet.Count > 0)
         {
-            var current = openSet.OrderBy(node => fScore.GetValueOrDefault(node.ToIdentifier(), int.MaxValue))
+            var current = openSet
+                .OrderBy(node => fScore.GetValueOrDefault(node.ToIdentifier(), int.MaxValue))
                 .First();
 
             var currentIdentifier = current.ToIdentifier();
 
             if (current.Coordinates == goal.Coordinates)
             {
-                // return ReconstructPath(cameFrom, current);
+                PrintPath(cameFrom, current);
                 return CalculatePathCost(cameFrom, current);
             }
 
             openSet.Remove(current);
 
-            var lastNodes = ReconstructPath(cameFrom, current, 5);
-            // var lastDirections = ReconstructDirections(lastNodes);
-            // var (lastDirection, speed) = ComputeSpeed(lastDirections);
             var currentCameWithDirection = current.Direction;
             var currentSpeed = current.Speed;
 
-            // if (lastNodes.Count > 1)
-            // {
-            //     possibleNeighbors = possibleNeighbors.FindAll(node =>
-            //         node.Key != lastNodes[^2].Key);
-            // }
-
-            // if (speed >= 3)
-            // {
-            //     possibleNeighbors = possibleNeighbors.FindAll(node =>
-            //         DirectionExtensions.FromChangeInCoordinates(node.Coordinates - current.Coordinates) != lastDirection
-            //     );
-            // }
-
             foreach (var neighbor in current.Neighbors)
             {
-                ++_numOfOperations;
-                var neighborCameWithDirection = DirectionExtensions.FromChangeInCoordinates(neighbor.Coordinates - current.Coordinates);
+                var neighborDirection = current.Coordinates.DirectionTo(neighbor.Coordinates);
 
-                if (DirectionExtensions.IsOpposite(current.Direction, neighborCameWithDirection))
+                var newNeighbor = neighbor with
                 {
-                    continue;
-                }
-
-                if (current.Direction == neighborCameWithDirection && currentSpeed >= 3)
-                {
-                    continue;
-                }
-
-                
-                var newNeighbor = neighbor with {
-                    Direction = neighborCameWithDirection,
-                    Speed = neighborCameWithDirection == current.Direction ? currentSpeed + 1 : 1,
+                    Direction = neighborDirection,
+                    Speed = neighborDirection == current.Direction ? currentSpeed + 1 : 1,
                 };
 
-                var tentativeScore = gScore.GetValueOrDefault(currentIdentifier, int.MaxValue) + newNeighbor.Cost;
+                var newNeighborIdentifier = newNeighbor.ToIdentifier();
 
-                var neighborGScore = gScore.GetValueOrDefault(newNeighbor.ToIdentifier(), int.MaxValue);
+                if (!canContinueDelegate(currentIdentifier, newNeighborIdentifier))
+                {
+                    continue;
+                }
+
+                var tentativeScore = gScore.GetValueOrDefault(currentIdentifier, int.MaxValue) + newNeighbor.Cost;
+                var neighborGScore = gScore.GetValueOrDefault(newNeighborIdentifier, int.MaxValue);
 
                 if (tentativeScore < neighborGScore)
                 {
-                    var identifier = newNeighbor.ToIdentifier();
-
-                    cameFrom[identifier] = current;
-
-                    gScore[identifier] = tentativeScore;
-
-                    fScore[identifier] = tentativeScore + AStarEstimator(newNeighbor, goal);
+                    cameFrom[newNeighborIdentifier] = current;
+                    gScore[newNeighborIdentifier] = tentativeScore;
+                    fScore[newNeighborIdentifier] = tentativeScore + AStarEstimator(newNeighbor, goal);
 
                     openSet.Add(newNeighbor);
                 }
@@ -129,7 +104,47 @@ public class Day17 : Solution
         return -1;
     }
 
-    private int AStarEstimator(Node current, Node goal)
+    private bool CanContinuePart1(NodeIdentifier prev, NodeIdentifier next)
+    {
+        return CanContinue(prev, next, 0, 3);
+    }
+
+    private bool CanContinuePart2(NodeIdentifier prev, NodeIdentifier next)
+    {
+        return CanContinue(prev, next, 4, 10);
+    }
+
+    private bool CanContinue(NodeIdentifier prev, NodeIdentifier next, int minSpeed, int maxSpeed)
+    {
+        if (next.Key == _numOfNodes - 1 && (next.Speed < minSpeed || next.Speed > maxSpeed))
+        {
+            return false;
+        }
+
+        if (prev.Direction == Direction.None)
+        {
+            return true;
+        }
+
+        if (prev.Direction.IsOppositeTo(next.Direction))
+        {
+            return false;
+        }
+
+        if (prev.Speed >= minSpeed && next.Speed <= maxSpeed)
+        {
+            return true;
+        }
+
+        if (prev.Speed < minSpeed && prev.Direction == next.Direction)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static int AStarEstimator(Node current, Node goal)
     {
         var distance = Math.Abs(goal.Coordinates.RowIndex - current.Coordinates.RowIndex)
             + Math.Abs(goal.Coordinates.ColumnIndex - current.Coordinates.ColumnIndex);
@@ -137,7 +152,15 @@ public class Day17 : Solution
         return distance;
     }
 
-    private List<Node> ReconstructPath(Dictionary<NodeIdentifier, Node> cameFrom, Node current, int maxSteps = int.MaxValue)
+    private static void PrintPath(Dictionary<NodeIdentifier, Node> cameFrom, Node lastNode)
+    {
+        var path = ReconstructPath(cameFrom, lastNode);
+
+        Console.WriteLine(path.Aggregate("", (acc, node) => acc + $"({node.Coordinates.RowIndex}, {node.Coordinates.ColumnIndex}) -> "));
+    }
+
+
+    private static List<Node> ReconstructPath(Dictionary<NodeIdentifier, Node> cameFrom, Node current, int maxSteps = int.MaxValue)
     {
         var path = new List<Node> { current };
         maxSteps--;
@@ -153,12 +176,9 @@ public class Day17 : Solution
         return path;
     }
 
-    private int CalculatePathCost(Dictionary<NodeIdentifier, Node> cameFrom, Node lastNode)
+    private static int CalculatePathCost(Dictionary<NodeIdentifier, Node> cameFrom, Node lastNode)
     {
         var cost = lastNode.Cost;
-
-
-        var first = cameFrom[new NodeIdentifier {Key = 1, Direction = Direction.Right, Speed = 1}];
 
         Node? current = lastNode;
         while (cameFrom.TryGetValue(current.ToIdentifier(), out current) && current.Key != 0)
@@ -167,49 +187,6 @@ public class Day17 : Solution
         }
 
         return cost;
-    }
-
-    private List<Direction> ReconstructDirections(List<Node> nodes)
-    {
-        var lastDirections = new List<Direction>();
-
-        Node? prev = null;
-        foreach (var node in nodes)
-        {
-            if (prev is not null)
-            {
-                lastDirections.Add(DirectionExtensions.FromChangeInCoordinates(node.Coordinates - prev.Coordinates));
-            }
-            prev = node;
-        }
-
-        return lastDirections;
-    }
-
-    private (Direction, int) ComputeSpeed(List<Direction> directions)
-    {
-        if (directions.Count == 0)
-        {
-            return (Direction.None, 0);
-        }
-
-        var speed = 1;
-        var prev = directions[0];
-        foreach (var direction in directions[1..])
-        {
-            if (prev == direction)
-            {
-                speed++;
-            }
-            else
-            {
-                speed = 1;
-            }
-
-            prev = direction;
-        }
-
-        return (prev, speed);
     }
 
     private void ParseInputMap()
@@ -267,16 +244,15 @@ public class Day17 : Solution
         }
     }
 
-    private readonly struct NodeIdentifier : IEquatable<NodeIdentifier>{
+    private readonly struct NodeIdentifier : IEquatable<NodeIdentifier>
+    {
         public int Key { get; init; }
-        // public Coordinates Coordinates { get; init; }
         public Direction Direction { get; init; }
         public int Speed { get; init; }
 
         public bool Equals(NodeIdentifier other)
         {
             return Key == other.Key
-                // && Coordinates == other.Coordinates
                 && Direction == other.Direction
                 && Speed == other.Speed;
         }
@@ -304,9 +280,9 @@ public class Day17 : Solution
 
         public NodeIdentifier ToIdentifier()
         {
-            return new NodeIdentifier {
+            return new NodeIdentifier
+            {
                 Key = Key,
-                // Coordinates = Coordinates,
                 Direction = Direction,
                 Speed = Speed
             };
@@ -335,41 +311,5 @@ public class Day17 : Solution
             return HashCode.Combine(Key, Speed, Direction, Parent?.Key);
         }
     }
-
-    // private class Path(Path.StepValidator stepValidator)
-    // {
-    //     public List<Step> Steps { get; set; } = [];
-
-    //     public int Cost => Steps.Sum(x => x.Cost);
-
-    //     public delegate bool StepValidator(List<Step> previousSteps, Step nextStep);
-
-    //     private StepValidator CurrentStepValidator { get; init; } = stepValidator;
-
-    //     public bool TryAddStep(Step step)
-    //     {
-    //         if (CurrentStepValidator(Steps, step))
-    //         {
-    //             return false;
-    //         }
-
-    //         Steps.Add(step);
-
-    //         return true;
-    //     }
-
-    //     public static bool IsValidStepPart1(List<Step> previousSteps, Step nextStep)
-    //     {
-    //         return previousSteps[^3..].All(x => x.Direction == nextStep.Direction);
-    //     }
-    // }
-
-    // private readonly struct Step(Direction direction, Node from, Node to)
-    // {
-    //     public Direction Direction { get; init; } = direction;
-    //     public int Cost { get; init; } = to.Cost;
-    //     public Node From { get; init; } = from;
-    //     public Node To { get; init; } = to;
-    // }
 }
 

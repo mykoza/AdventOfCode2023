@@ -38,6 +38,30 @@ public readonly struct Coordinates : IEquatable<Coordinates>
         columnIndex = ColumnIndex;
     }
 
+    public Direction DirectionTo(Coordinates other)
+    {
+        if (other.RowIndex < RowIndex)
+        {
+            return Direction.Up;
+        }
+        else if (other.RowIndex > RowIndex)
+        {
+            return Direction.Down;
+        }
+        else if (other.ColumnIndex < ColumnIndex)
+        {
+            return Direction.Left;
+        }
+        else if (other.ColumnIndex > ColumnIndex)
+        {
+            return Direction.Right;
+        }
+        else
+        {
+            return Direction.None;
+        }
+    }
+
     public static implicit operator (int rowIndex, int columnIndex)(Coordinates value)
     {
         return (value.RowIndex, value.ColumnIndex);
