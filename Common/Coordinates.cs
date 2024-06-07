@@ -1,6 +1,6 @@
 namespace AdventOfCode2023.Common;
 
-public readonly struct Coordinates
+public readonly struct Coordinates : IEquatable<Coordinates>
 {
     public int RowIndex { get; init; }
     public int ColumnIndex { get; init; }
@@ -17,11 +17,14 @@ public readonly struct Coordinates
         ColumnIndex = columnIndex;
     }
 
+    public bool Equals(Coordinates other)
+    {
+        return RowIndex == other.RowIndex && ColumnIndex == other.ColumnIndex;
+    }
+
     public override bool Equals(object? obj)
     {
-        return obj is Coordinates other &&
-               RowIndex == other.RowIndex &&
-               ColumnIndex == other.ColumnIndex;
+        return obj is Coordinates coordinates && Equals(coordinates);
     }
 
     public override int GetHashCode()
