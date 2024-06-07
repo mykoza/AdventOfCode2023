@@ -160,12 +160,13 @@ public class Day17 : Solution
     }
 
 
-    private static List<Node> ReconstructPath(Dictionary<NodeIdentifier, Node> cameFrom, Node current, int maxSteps = int.MaxValue)
+    private static List<Node> ReconstructPath(Dictionary<NodeIdentifier, Node> cameFrom, Node lastNode, int maxSteps = int.MaxValue)
     {
-        var path = new List<Node> { current };
+        var path = new List<Node> { lastNode };
         maxSteps--;
 
-        while (cameFrom.TryGetValue(current.ToIdentifier(), out current) && maxSteps > 0)
+        Node? current = lastNode;
+        while (maxSteps > 0 && cameFrom.TryGetValue(current.ToIdentifier(), out current))
         {
             path.Add(current);
             maxSteps--;
@@ -181,7 +182,7 @@ public class Day17 : Solution
         var cost = lastNode.Cost;
 
         Node? current = lastNode;
-        while (cameFrom.TryGetValue(current.ToIdentifier(), out current) && current.Key != 0)
+        while (current.Key != 0 && cameFrom.TryGetValue(current.ToIdentifier(), out current))
         {
             cost += current.Cost;
         }
