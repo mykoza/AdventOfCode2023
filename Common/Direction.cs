@@ -9,7 +9,7 @@ public enum Direction
     None
 }
 
-public static class DirectionExtensions
+public static class DirectionHelpers
 {
     public static bool IsOppositeTo(this Direction direction, Direction other)
     {
@@ -57,5 +57,17 @@ public static class DirectionExtensions
         {
             return Direction.None;
         }
+    }
+    
+    public static Direction FromString(string str)
+    {
+        return str switch
+        {
+            "U" => Direction.Up,
+            "D" => Direction.Down,
+            "L" => Direction.Left,
+            "R" => Direction.Right,
+            _ => Direction.None
+        };
     }
 }

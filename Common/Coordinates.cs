@@ -38,6 +38,30 @@ public readonly struct Coordinates : IEquatable<Coordinates>
         columnIndex = ColumnIndex;
     }
 
+    public Coordinates ChangeBy(Direction direction, int amount = 1)
+    {
+        return direction switch
+        {
+            Direction.Up => this with
+            {
+                RowIndex = RowIndex - amount,
+            },
+            Direction.Down => this with
+            {
+                RowIndex = RowIndex + amount,
+            },
+            Direction.Left => this with
+            {
+                ColumnIndex = ColumnIndex - amount,
+            },
+            Direction.Right => this with
+            {
+                ColumnIndex = ColumnIndex + amount,
+            },
+            _ => this,
+        };
+    }
+
     public Direction DirectionTo(Coordinates other)
     {
         if (other.RowIndex < RowIndex)
