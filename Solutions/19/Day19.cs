@@ -66,7 +66,75 @@ public class Day19 : Solution
 
     protected override string LogicPart2()
     {
-        throw new NotImplementedException();
+        _workflows.Add("A", new Workflow("A", []));
+        _workflows.Add("R", new Workflow("R", []));
+
+        var dict = new Dictionary<string, Range>()
+        {
+            { "x", new Range(1, 4001) },
+            { "m", new Range(1, 4001) },
+            { "a", new Range(1, 4001) },
+            { "s", new Range(1, 4001) },
+        };
+
+        return Combinations(dict, _workflows["in"]).ToString();
+    }
+
+    private long Combinations(Dictionary<string, Range> ranges, Workflow workflow)
+    {
+        if (workflow.Name == "R")
+        {
+            return 0;
+        }
+
+        if (workflow.Name == "A")
+        {
+            return ranges
+                .Aggregate(1L, (acc, range) => acc * (range.Value.End.Value - range.Value.Start.Value));
+        }
+
+        var rules = workflow.Rules;
+
+        long total = 0;
+
+        foreach (var rule in rules)
+        {
+            if (rule.Category is null)
+            {
+                total += Combinations(ranges, _workflows[rule.Result]);
+                break;
+            }
+
+            var (start, end) = (ranges[rule.Category].Start.Value, ranges[rule.Category].End.Value);
+
+            Range t;
+            Range f;
+            if (rule.Comparison == "<" && rule.Value is not null)
+            {
+                t = new Range(start, rule.Value.Value);
+                f = new Range(rule.Value.Value, end);
+            }
+            else
+            {
+                t = new Range(rule.Value.Value + 1, end);
+                f = new Range(start, rule.Value.Value + 1);
+            }
+
+            if (t.Start.Value < t.End.Value)
+            {
+                var dict = ranges.ToDictionary();
+                dict[rule.Category] = t;
+                total += Combinations(dict, _workflows[rule.Result]);
+            }
+
+            if (f.Start.Value < f.End.Value)
+            {
+                ranges = ranges.ToDictionary();
+                ranges[rule.Category] = f;
+            }
+        }
+
+        return total;
     }
 
     record Part(int X, int M, int A, int S)
@@ -83,18 +151,33 @@ public class Day19 : Solution
         }
     }
 
-    class Rule(string? category, string? comparison, int? value, string result)
+    class Rule
     {
-        public string? Category { get; set; } = category;
-        public string? Comparison { get; set; } = comparison;
-        public int? Value { get; set; } = value;
-        public string Result { get; set; } = result;
+        public string? Category { get; set; }
+        public string? Comparison { get; set; }
+        public int? Value { get; set; }
+        public string Result { get; set; }
+        public bool IsDefault { get; set; } = false;
+
+        public Rule(string result)
+        {
+            Result = result;
+            IsDefault = true;
+        }
+
+        public Rule(string category, string comparison, int value, string result)
+        {
+            Category = category;
+            Comparison = comparison;
+            Value = value;
+            Result = result;
+        }
 
         public static Rule Parse(string input)
         {
             if (!input.Contains(':'))
             {
-                return new Rule(null, null, null, input);
+                return new Rule(input);
             }
 
             var category = input[0].ToString();
@@ -142,7 +225,7 @@ public class Day19 : Solution
 
         public string Evaluate(Part part)
         {
-            foreach (var rule in rules)
+            foreach (var rule in Rules)
             {
                 if (rule.AppliesTo(part))
                 {
