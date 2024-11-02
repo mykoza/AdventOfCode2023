@@ -137,8 +137,23 @@ public class Day19 : Solution
         return total;
     }
 
-    record Part(int X, int M, int A, int S)
+    class Part
     {
+        public int X => _ratings["x"];
+        public int M => _ratings["m"];
+        public int A => _ratings["a"];
+        public int S => _ratings["s"];
+
+        private readonly Dictionary<string, int> _ratings = [];
+
+        public Part(int X, int M, int A, int S)
+        {
+            _ratings.Add("x", X);
+            _ratings.Add("m", M);
+            _ratings.Add("a", A);
+            _ratings.Add("s", S);
+        }
+
         public static Part Parse(string input)
         {
             var split = input.Trim(['{', '}']).Split(',');
@@ -149,6 +164,8 @@ public class Day19 : Solution
 
             return new Part(x, m, a, s);
         }
+
+        public int this[string key] => _ratings[key.ToLower()];
     }
 
     class Rule
@@ -157,12 +174,10 @@ public class Day19 : Solution
         public string? Comparison { get; set; }
         public int? Value { get; set; }
         public string Result { get; set; }
-        public bool IsDefault { get; set; } = false;
 
         public Rule(string result)
         {
             Result = result;
-            IsDefault = true;
         }
 
         public Rule(string category, string comparison, int value, string result)
@@ -195,7 +210,7 @@ public class Day19 : Solution
                 return true;
             }
 
-            var val = (int)part.GetType().GetProperty(Category.ToUpper())!.GetValue(part, null)!;
+            var val = part[Category];
 
             if (Comparison == "<")
             {
