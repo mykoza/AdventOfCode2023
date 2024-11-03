@@ -2,6 +2,18 @@
 
 public static class Maths
 {
+    public static long LeastCommonMultiple(params long[] numbers)
+    {
+        long lcm = 1;
+
+        foreach (var number in numbers)
+        {
+            lcm = LeastCommonMultiple(lcm, number);
+        }
+
+        return lcm;
+    }
+
     public static long LeastCommonMultiple(IEnumerable<long> numbers)
     {
         long lcm = 1;
@@ -20,6 +32,30 @@ public static class Maths
         long b = Math.Abs(value2);
 
         return a / GreatestCommonDivisor(a, b) * b;
+    }
+
+    public static long GreatestCommonDivisor(params long[] numbers)
+    {
+        long gcd = 1;
+
+        foreach (var number in numbers)
+        {
+            gcd = GreatestCommonDivisor(gcd, number);
+        }
+
+        return gcd;
+    }
+
+    public static long GreatestCommonDivisor(IEnumerable<long> numbers)
+    {
+        long gcd = 1;
+
+        foreach (var number in numbers)
+        {
+            gcd = GreatestCommonDivisor(gcd, number);
+        }
+
+        return gcd;
     }
 
     public static long GreatestCommonDivisor(long value1, long value2)
